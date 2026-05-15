@@ -46,6 +46,28 @@ with col2:
     renovations_old = st.number_input("Repairs/Renovations before renting out (€)", value=20000, step=1000)
     marginal_tax_rate = st.slider("Your Marginal Tax Rate (Grenzsteuersatz) (%)", min_value=15, max_value=45, value=42, step=1, help="Used to calculate your tax savings. In Germany, highest income tax rate is 42% (or 45% for very high income).")
 
+    st.markdown("---")
+    st.subheader("Old House (Rental) Financials")
+
+    yearly_rent = monthly_rent * 12
+    st.write(f"Yearly Rent Income (Kaltmiete): **€{yearly_rent:,.2f}**")
+
+    # Tax Deductions
+    tax_savings = renovations_old * (marginal_tax_rate / 100)
+    net_renovation_cost = renovations_old - tax_savings
+
+    st.write(f"Estimated Tax Savings from Renovations: **€{tax_savings:,.2f}**")
+    st.write(f"Net Cost of Renovations (After Tax): **€{net_renovation_cost:,.2f}**")
+
+    with st.expander("ℹ️ How do tax deductions for the old house work in Germany?"):
+        st.write(f"""
+        In Germany, if you rent out a property, costs incurred to maintain or repair the property (Erhaltungsaufwand) can be deducted from your rental income as *Werbungskosten*.
+
+        Since your marginal tax rate is set to **{marginal_tax_rate}%**, for every €1,000 you spend on repairs, you reduce your taxable income by €1,000, effectively saving you €{(1000 * marginal_tax_rate/100):.2f} in taxes.
+
+        *Note: If the renovation costs exceed 15% of the building's value within the first 3 years of purchasing (anschaffungsnaher Herstellungsaufwand), they must be depreciated over 50 years at 2% per year. However, since you already own this house and lived in it, immediate deduction is usually applicable for maintenance and repairs.*
+        """)
+
 
 st.markdown("---")
 st.header("3. Financial Analysis & Threshold")
@@ -94,39 +116,20 @@ else:
 
 
 st.markdown("---")
-st.subheader("Old House (Rental) Financials")
-
-yearly_rent = monthly_rent * 12
-st.write(f"Yearly Rent Income (Kaltmiete): **€{yearly_rent:,.2f}**")
-
-# Tax Deductions
-tax_savings = renovations_old * (marginal_tax_rate / 100)
-net_renovation_cost = renovations_old - tax_savings
-
-st.write(f"Estimated Tax Savings from Renovations: **€{tax_savings:,.2f}**")
-st.write(f"Net Cost of Renovations (After Tax): **€{net_renovation_cost:,.2f}**")
-
-with st.expander("ℹ️ How do tax deductions for the old house work in Germany?"):
-    st.write(f"""
-    In Germany, if you rent out a property, costs incurred to maintain or repair the property (Erhaltungsaufwand) can be deducted from your rental income as *Werbungskosten*.
-
-    Since your marginal tax rate is set to **{marginal_tax_rate}%**, for every €1,000 you spend on repairs, you reduce your taxable income by €1,000, effectively saving you €{(1000 * marginal_tax_rate/100):.2f} in taxes.
-
-    *Note: If the renovation costs exceed 15% of the building's value within the first 3 years of purchasing (anschaffungsnaher Herstellungsaufwand), they must be depreciated over 50 years at 2% per year. However, since you already own this house and lived in it, immediate deduction is usually applicable for maintenance and repairs.*
-    """)
-
-st.markdown("---")
 st.header("4. Overall Cash Flow Summary")
-st.write("Combining the costs of the new house with the income from the old house.")
+st.write("Combining the costs of the new house, the income from the old house, and your personal income.")
+
+job_salary_net = st.number_input("Monthly Net Job Salary (€)", value=3000, step=100, help="Your monthly net income from your job to be included in your cash flow.")
 
 if loan_amount > 0:
-    net_monthly_cash_flow = monthly_rent - actual_monthly_payment
-    net_yearly_cash_flow = (monthly_rent * 12) - (actual_monthly_payment * 12)
+    net_monthly_cash_flow = monthly_rent + job_salary_net - actual_monthly_payment
+    net_yearly_cash_flow = (monthly_rent * 12) + (job_salary_net * 12) - (actual_monthly_payment * 12)
 
     st.subheader("Monthly Overview")
-    col5, col6, col7 = st.columns(3)
+    col5, col6, col8, col7 = st.columns(4)
     col5.metric("Rental Income", f"+ €{monthly_rent:,.2f}")
-    col6.metric("Mortgage Payment", f"- €{actual_monthly_payment:,.2f}")
+    col6.metric("Net Job Salary", f"+ €{job_salary_net:,.2f}")
+    col8.metric("Mortgage Payment", f"- €{actual_monthly_payment:,.2f}")
     col7.metric("Net Monthly Cash Flow", f"€{net_monthly_cash_flow:,.2f}",
                 delta_color="normal" if net_monthly_cash_flow >= 0 else "inverse",
                 delta=f"€{net_monthly_cash_flow:,.2f}")
@@ -141,6 +144,8 @@ if loan_amount > 0:
     """)
 
     # Calculate affordability threshold
+    # Note: Desired monthly payment is conceptually an out-of-pocket target.
+    # The max affordable payment uses desired + rent (and potentially salary, if they choose to put their whole salary towards it, but conventionally desired out of pocket means from their main income).
     max_affordable_payment = desired_monthly_payment + monthly_rent
     max_loan_capacity = npf.pv(monthly_interest_rate, total_months, -max_affordable_payment, 0)
     max_purchase_price = max_loan_capacity + down_payment - renovations_new
