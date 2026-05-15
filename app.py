@@ -71,31 +71,6 @@ def format_eur(amount):
 # --- ROW 1: Das Neue Haus | Das Alte Haus ---
 row1_col1, row1_col2 = st.columns(2)
 
-with row1_col1:
-    with st.container(border=True):
-        st.header("1. Das Neue Haus (Kauf)")
-
-        r1c1, r1c2, r1c3 = st.columns(3)
-        with r1c1:
-            purchase_price = st.number_input("Kaufpreis (€)", value=500000, step=None)
-        with r1c2:
-            closing_costs_percent = st.number_input("Kaufnebenkosten (%)", value=8.0, step=None, help="In Hessen beträgt die Grunderwerbsteuer 6%. Notar und Grundbuchamt machen ca. 2% aus.")
-        with r1c3:
-            renovations_new = st.number_input("Geschätzte Reparaturen", value=25000, step=None)
-
-        closing_costs_eur = purchase_price * (closing_costs_percent / 100)
-        st.markdown(f'<div class="calculated-result">Berechnete Kaufnebenkosten: <b>€{format_eur(closing_costs_eur)}</b></div>', unsafe_allow_html=True)
-
-        r2c1, r2c2, r2c3 = st.columns(3)
-        with r2c1:
-            down_payment = st.number_input("Eigenkapital (€)", value=160000, step=None, help="Bargeld, das Sie für den Kauf, die Nebenkosten und Renovierungen einsetzen.")
-
-        total_capital_needed = purchase_price + closing_costs_eur + renovations_new
-        loan_amount = total_capital_needed - down_payment
-
-        st.markdown(f'<div class="calculated-result">Gesamt benötigtes Kapital: <b>€{format_eur(total_capital_needed)}</b></div>', unsafe_allow_html=True)
-        st.markdown(f'<div class="calculated-result">Benötigter Kreditbetrag: <b>€{format_eur(loan_amount)}</b></div>', unsafe_allow_html=True)
-
 with row1_col2:
     with st.container(border=True):
         st.header("2. Das Alte Haus (Vermietung)")
@@ -110,16 +85,48 @@ with row1_col2:
         st.markdown(f'<div class="calculated-result">Jährliche Mieteinnahmen (Kaltmiete): <b>€{format_eur(yearly_rent)}</b></div>', unsafe_allow_html=True)
 
 
+with row1_col1:
+    with st.container(border=True):
+        st.header("1. Das Neue Haus (Kauf)")
+
+        r1c1, r1c2, r1c3 = st.columns(3)
+        with r1c1:
+            purchase_price = st.number_input("Kaufpreis (€)", value=500000, step=None)
+        with r1c2:
+            closing_costs_percent = st.number_input("Kaufnebenkosten (%)", value=8.0, step=None, help="In Hessen beträgt die Grunderwerbsteuer 6%. Notar und Grundbuchamt machen ca. 2% aus.")
+        with r1c3:
+            renovations_new = st.number_input("Geschätzte Reparaturen", value=25000, step=None)
+
+        r2c1, r2c2, r2c3 = st.columns(3)
+
+        # Calculate dynamic values now that renovations_old is available
+        closing_costs_eur = purchase_price * (closing_costs_percent / 100)
+        total_capital_needed = purchase_price + closing_costs_eur + renovations_new + renovations_old
+
+        with r2c1:
+            st.markdown(f'<div class="calculated-result">Benötigtes Kapital (Gesamt): <b>€{format_eur(total_capital_needed)}</b></div>', unsafe_allow_html=True)
+        with r2c2:
+            st.markdown(f'<div class="calculated-result">Berechnete Kaufnebenkosten: <b>€{format_eur(closing_costs_eur)}</b></div>', unsafe_allow_html=True)
+        with r2c3:
+            down_payment = st.number_input("Eigenkapital (€)", value=160000, step=None, help="Bargeld, das Sie für den Kauf, die Nebenkosten und Renovierungen einsetzen.")
+
+        loan_amount = total_capital_needed - down_payment
+
+        r3c1, r3c2, r3c3 = st.columns(3)
+        with r3c1:
+            st.markdown(f'<div class="calculated-result">Benötigter Kreditbetrag: <b>€{format_eur(loan_amount)}</b></div>', unsafe_allow_html=True)
+
+
 # --- ROW 2: Hypotheken-Details | Einkommen ---
 row2_col1, row2_col2 = st.columns(2)
 
 with row2_col1:
     with st.container(border=True):
         st.header("Hypotheken-Details")
-        r3c1, r3c2 = st.columns(2)
-        with r3c1:
+        r4c1, r4c2 = st.columns(2)
+        with r4c1:
             interest_rate = st.number_input("Zinssatz der Hypothek (%)", value=3.5, step=None)
-        with r3c2:
+        with r4c2:
             duration_years = st.number_input("Laufzeit der Hypothek (Jahre)", value=15, step=None)
 
         if loan_amount <= 0:
@@ -142,6 +149,7 @@ with row2_col2:
             other_income = st.number_input("Andere Einkommensquellen (€)", value=0, step=None)
 
         total_monthly_income = job_salary_net + other_income
+        st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Gesamtes monatliches Einkommen: <b>€{format_eur(total_monthly_income)}</b></div>', unsafe_allow_html=True)
 
 
 # --- ROW 3: Laufende Nebenkosten | Laufende Nebenkosten ---
@@ -216,8 +224,6 @@ with row4_col1:
         if loan_amount > 0:
             total_monthly_burden = actual_monthly_payment + monthly_nebenkosten_new
 
-            st.subheader("Kosten für das Neue Haus")
-
             inner_col1, inner_col2 = st.columns(2)
             with inner_col1:
                 st.metric("Erforderliche monatliche Rate (Kredit)", f"€{format_eur(actual_monthly_payment)}")
@@ -262,3 +268,8 @@ with row4_col2:
                 <div class="cashflow-value">€{format_eur(net_monthly_cash_flow_b)}</div>
             </div>
             """, unsafe_allow_html=True)
+
+# Add spacing at the bottom of the page
+st.write("")
+st.write("")
+st.write("")
