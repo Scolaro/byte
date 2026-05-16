@@ -187,9 +187,9 @@ with row2_col1:
         with nk3c1:
             st.markdown(f'<div class="calculated-result">Jährliche Nebenkosten: <b>€{format_eur(yearly_nebenkosten_new)}</b></div>', unsafe_allow_html=True)
         with nk3c2:
-            pass
-        with nk3c3:
             st.markdown(f'<div class="calculated-result">Monatliche Nebenkosten: <b>€{format_eur(monthly_nebenkosten_new)}</b></div>', unsafe_allow_html=True)
+        with nk3c3:
+            pass
         with nk3c4:
             pass
 
@@ -244,9 +244,9 @@ with row2_col2:
             with r4_res1:
                 st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Jährliche Mieteinnahmen (Kaltmiete): <b>€{format_eur(yearly_rent)}</b></div>', unsafe_allow_html=True)
             with r4_res2:
-                pass
-            with r4_res3:
                 st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Netto-Mietüberschuss (inkl. Steuer): <b>€{format_eur(net_rental_surplus)}</b></div>', unsafe_allow_html=True)
+            with r4_res3:
+                pass
 
 
 # --- ROW 3: Stacked Left Column vs Finanzielle Analyse Right Column ---
