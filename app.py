@@ -121,9 +121,9 @@ with row1_col2:
 
         r4a_1, r4a_2 = st.columns(2)
         with r4a_1:
-            afa_old_house = st.number_input("Jährliche Gebäudeabschreibung (AfA) in €", value=0, step=None, help="Mindert die Steuerlast, aber nicht den Cashflow.")
+            afa_old_house = st.number_input("Jährliche Gebäudeabschreibung (AfA) in €", value=3750, step=None, help="Mindert die Steuerlast, aber nicht den Cashflow.")
         with r4a_2:
-            mietausfallwagnis_percent = st.number_input("Mietausfallwagnis (%)", value=3.0, step=None, help="Simuliert Leerstand und Mieterwechsel.")
+            mietausfallwagnis_percent = st.number_input("Mietausfallwagnis (%)", value=2.5, step=None, help="Simuliert Leerstand und Mieterwechsel.")
 
         yearly_rent = monthly_rent * 12
         rent_result_placeholder = st.empty()
@@ -253,9 +253,25 @@ with row2_col2:
             with r4_res1:
                 st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Jährliche Mieteinnahmen (Kaltmiete): <b>€{format_eur(yearly_rent)}</b></div>', unsafe_allow_html=True)
             with r4_res2:
-                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Netto-Mietüberschuss (nach Steuerabzug): <b>€{format_eur(net_rental_surplus)}</b><br><small style="font-size: 0.8em; color: #666;">(Miete - Mietausfallwagnis - Steuern)</small></div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Netto-Mietüberschuss (mtl., nach Steuerabzug) <span title="Miete - Mietausfallwagnis - Steuern">ℹ️</span>: <b>€{format_eur(net_rental_surplus)}</b></div>', unsafe_allow_html=True)
             with r4_res3:
                 pass
+
+    with st.container(border=True):
+        st.header("Einkommen")
+        r5c1, r5c2 = st.columns(2)
+        with r5c1:
+            job_salary_net = st.number_input("Monatliches Netto-Gehalt (€) 📌", value=2600, step=None, help="Dieser Wert ist typischerweise vorgegeben, kann aber von Ihnen angepasst werden.")
+        with r5c2:
+            other_income = st.number_input("Andere Einkommensquellen (€)", value=0, step=None)
+
+        total_monthly_income = job_salary_net + other_income
+
+        r6c1, r6c2 = st.columns(2)
+        with r6c1:
+            st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Gesamtes jährliches Einkommen: <b>€{format_eur(total_monthly_income * 12)}</b></div>', unsafe_allow_html=True)
+        with r6c2:
+            st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Gesamtes monatliches Einkommen: <b>€{format_eur(total_monthly_income)}</b></div>', unsafe_allow_html=True)
 
 
 # --- ROW 3: Stacked Left Column vs Finanzielle Analyse Right Column ---
@@ -278,22 +294,6 @@ with row3_col1:
             actual_monthly_payment = (loan_amount * ((interest_rate + tilgungssatz) / 100)) / 12
 
         st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Erforderliche monatliche Rate (Kredit): <b>€{format_eur(actual_monthly_payment)}</b></div>', unsafe_allow_html=True)
-
-    with st.container(border=True):
-        st.header("Einkommen")
-        r5c1, r5c2 = st.columns(2)
-        with r5c1:
-            job_salary_net = st.number_input("Monatliches Netto-Gehalt (€) 📌", value=2600, step=None, help="Dieser Wert ist typischerweise vorgegeben, kann aber von Ihnen angepasst werden.")
-        with r5c2:
-            other_income = st.number_input("Andere Einkommensquellen (€)", value=0, step=None)
-
-        total_monthly_income = job_salary_net + other_income
-
-        r6c1, r6c2 = st.columns(2)
-        with r6c1:
-            st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Gesamtes jährliches Einkommen: <b>€{format_eur(total_monthly_income * 12)}</b></div>', unsafe_allow_html=True)
-        with r6c2:
-            st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Gesamtes monatliches Einkommen: <b>€{format_eur(total_monthly_income)}</b></div>', unsafe_allow_html=True)
 
     with st.container(border=True):
         st.header("Laufende Kosten (Privat, mtl.)")
@@ -319,9 +319,9 @@ with row3_col1:
         st.header("Private Sparraten / Rücklagen (mtl.)")
         sr1, sr2 = st.columns(2)
         with sr1:
-            inst_new_house = st.number_input("Instandhaltungsrücklage Neues Haus", value=500, step=None, help="Sollte ca. 1-2 € pro m² pro Monat betragen")
+            inst_new_house = st.number_input("Instandhaltungsrücklage Neues Haus", value=50, step=None, help="Sollte ca. 1-2 € pro m² pro Monat betragen")
         with sr2:
-            inst_old_house = st.number_input("Instandhaltungsrücklage Altes Haus", value=500, step=None, help="Sollte ca. 1-2 € pro m² pro Monat betragen")
+            inst_old_house = st.number_input("Instandhaltungsrücklage Altes Haus", value=50, step=None, help="Sollte ca. 1-2 € pro m² pro Monat betragen")
 
         total_monthly_savings = inst_new_house + inst_old_house
 
