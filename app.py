@@ -120,7 +120,7 @@ with row1_col2:
             tax_rate_rent = st.number_input("Pausch. Steuersatz Mieterträge (%)", value=25.0, step=None, help="Puffer für die Einkommensteuer auf den Netto-Mietüberschuss.")
 
         yearly_rent = monthly_rent * 12
-        st.markdown(f'<div class="calculated-result">Jährliche Mieteinnahmen (Kaltmiete): <b>€{format_eur(yearly_rent)}</b></div>', unsafe_allow_html=True)
+        rent_result_placeholder = st.empty()
 
 
 with row1_col1:
@@ -231,6 +231,23 @@ with row2_col2:
         with nko3c4:
             pass
 
+        # Now that we have monthly_instandhaltung_old, we can populate the rent_result_placeholder
+        net_rental_profit_before_tax = monthly_rent - monthly_instandhaltung_old
+        if net_rental_profit_before_tax > 0:
+            rental_tax = net_rental_profit_before_tax * (tax_rate_rent / 100)
+            net_rental_surplus = net_rental_profit_before_tax - rental_tax
+        else:
+            net_rental_surplus = net_rental_profit_before_tax
+
+        with rent_result_placeholder.container():
+            r4_res1, r4_res2, r4_res3 = st.columns(3)
+            with r4_res1:
+                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Jährliche Mieteinnahmen (Kaltmiete): <b>€{format_eur(yearly_rent)}</b></div>', unsafe_allow_html=True)
+            with r4_res2:
+                pass
+            with r4_res3:
+                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Netto-Mietüberschuss (inkl. Steuer): <b>€{format_eur(net_rental_surplus)}</b></div>', unsafe_allow_html=True)
+
 
 # --- ROW 3: Stacked Left Column vs Finanzielle Analyse Right Column ---
 row3_col1, row3_col2 = st.columns(2)
@@ -262,8 +279,12 @@ with row3_col1:
             other_income = st.number_input("Andere Einkommensquellen (€)", value=0, step=None)
 
         total_monthly_income = job_salary_net + other_income
-        st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Gesamtes monatliches Einkommen: <b>€{format_eur(total_monthly_income)}</b></div>', unsafe_allow_html=True)
-        st.markdown(f'<div class="calculated-result">Gesamtes jährliches Einkommen: <b>€{format_eur(total_monthly_income * 12)}</b></div>', unsafe_allow_html=True)
+
+        r6c1, r6c2 = st.columns(2)
+        with r6c1:
+            st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Gesamtes jährliches Einkommen: <b>€{format_eur(total_monthly_income * 12)}</b></div>', unsafe_allow_html=True)
+        with r6c2:
+            st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Gesamtes monatliches Einkommen: <b>€{format_eur(total_monthly_income)}</b></div>', unsafe_allow_html=True)
 
     with st.container(border=True):
         st.header("Laufende Kosten (Privat, mtl.)")
@@ -276,8 +297,14 @@ with row3_col1:
             priv_sonstiges = st.number_input("Sonstiges", value=100, step=None)
 
         monthly_nebenkosten_privat = priv_nahrung + priv_versicherungen + priv_sonstiges
-        st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Monatliche Privatkosten: <b>€{format_eur(monthly_nebenkosten_privat)}</b></div>', unsafe_allow_html=True)
-        st.markdown(f'<div class="calculated-result">Jährliche Privatkosten: <b>€{format_eur(monthly_nebenkosten_privat * 12)}</b></div>', unsafe_allow_html=True)
+
+        pr2c1, pr2c2, pr2c3 = st.columns(3)
+        with pr2c1:
+            st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Jährliche Privatkosten: <b>€{format_eur(monthly_nebenkosten_privat * 12)}</b></div>', unsafe_allow_html=True)
+        with pr2c2:
+            st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Monatliche Privatkosten: <b>€{format_eur(monthly_nebenkosten_privat)}</b></div>', unsafe_allow_html=True)
+        with pr2c3:
+            pass
 
 
 with row3_col2:
@@ -306,14 +333,7 @@ with row3_col2:
         with cf_col1:
             st.subheader("Szenario A (Vermietet)")
 
-            # Tax logic for rental
-            net_rental_profit_before_tax = monthly_rent - monthly_instandhaltung_old
-            if net_rental_profit_before_tax > 0:
-                rental_tax = net_rental_profit_before_tax * (tax_rate_rent / 100)
-                net_rental_surplus = net_rental_profit_before_tax - rental_tax
-            else:
-                net_rental_surplus = net_rental_profit_before_tax
-
+            # Tax logic for rental (already calculated above)
             net_monthly_cash_flow_a = total_monthly_income + net_rental_surplus - total_monthly_burden
             net_yearly_cash_flow_a = net_monthly_cash_flow_a * 12
 
