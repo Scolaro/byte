@@ -1,8 +1,10 @@
 import streamlit as st
 import numpy_financial as npf
 
+# Must be the first Streamlit command
 st.set_page_config(page_title="Hausprojekt-Rechner", layout="wide", initial_sidebar_state="collapsed")
 
+# Inject custom CSS
 st.markdown("""
 <style>
 /* Remove top padding */
@@ -94,9 +96,8 @@ def format_eur(amount):
 
 
 # --- WE EXTRACT ALL INPUTS FIRST WITHOUT UI LAYOUT SO WE CAN COMPUTE GLOBALLY ---
-# We wrap them in st.empty() or just use variables in layout later. Actually, the easiest way to solve Streamlit's top-down constraint
-# while having perfect horizontal alignment is to define horizontal rows using `st.columns(2)` one after the other.
 
+# --- ROW 1: Das Neue Haus | Das Alte Haus ---
 row1_col1, row1_col2 = st.columns(2)
 
 with row1_col2:
@@ -110,6 +111,12 @@ with row1_col2:
 
         yearly_rent = monthly_rent * 12
         st.markdown(f'<div class="calculated-result">Jährliche Mieteinnahmen (Kaltmiete): <b>€{format_eur(yearly_rent)}</b></div>', unsafe_allow_html=True)
+
+        # Add vertical spacer to match the height of "Das Neue Haus" so that the next rows align perfectly
+        st.write("")
+        st.write("")
+        st.write("")
+        st.write("")
 
 with row1_col1:
     with st.container(border=True):
@@ -128,60 +135,22 @@ with row1_col1:
         total_capital_needed = purchase_price + closing_costs_eur + renovations_new + renovations_old
 
         r2c1, r2c2, r2c3 = st.columns(3)
-        with r2c1:
-            # We add a slight margin-top here so it perfectly aligns vertically with the Eigenkapital input field bounding box.
-            st.markdown(f'<div class="calculated-result" style="margin-top: 32px;">Benötigtes Kapital: <b>€{format_eur(total_capital_needed)}</b></div>', unsafe_allow_html=True)
-        with r2c2:
-            st.markdown(f'<div class="calculated-result" style="margin-top: 32px;">Kaufnebenkosten: <b>€{format_eur(closing_costs_eur)}</b></div>', unsafe_allow_html=True)
         with r2c3:
             down_payment = st.number_input("Eigenkapital (€)", value=160000, step=None, help="Bargeld, das Sie für den Kauf, die Nebenkosten und Renovierungen einsetzen.")
 
         loan_amount = total_capital_needed - down_payment
 
-        r3c1, r3c2, r3c3 = st.columns(3)
-        with r3c1:
+        with r2c1:
+            st.markdown(f'<div class="calculated-result" style="margin-top: 32px;">Benötigtes Kapital: <b>€{format_eur(total_capital_needed)}</b></div>', unsafe_allow_html=True)
             st.markdown(f'<div class="calculated-result">Benötigter Kreditbetrag: <b>€{format_eur(loan_amount)}</b></div>', unsafe_allow_html=True)
+        with r2c2:
+            st.markdown(f'<div class="calculated-result" style="margin-top: 32px;">Kaufnebenkosten: <b>€{format_eur(closing_costs_eur)}</b></div>', unsafe_allow_html=True)
 
 
-# --- ROW 2: Hypotheken-Details & Einkommen ---
+# --- ROW 2: Laufende Nebenkosten ---
 row2_col1, row2_col2 = st.columns(2)
 
 with row2_col1:
-    with st.container(border=True):
-        st.header("Hypotheken-Details")
-        r4c1, r4c2 = st.columns(2)
-        with r4c1:
-            interest_rate = st.number_input("Zinssatz der Hypothek (%)", value=3.5, step=None)
-        with r4c2:
-            duration_years = st.number_input("Laufzeit der Hypothek (Jahre)", value=15, step=None)
-
-        if loan_amount <= 0:
-            actual_monthly_payment = 0.0
-            st.success("Ihr Eigenkapital deckt alle Kosten! Keine Hypothek erforderlich.")
-        else:
-            monthly_interest_rate = (interest_rate / 100) / 12
-            total_months = duration_years * 12
-            actual_monthly_payment = -npf.pmt(monthly_interest_rate, total_months, loan_amount)
-
-        st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Erforderliche monatliche Rate (Kredit): <b>€{format_eur(actual_monthly_payment)}</b></div>', unsafe_allow_html=True)
-
-with row2_col2:
-    with st.container(border=True):
-        st.header("Einkommen")
-        r5c1, r5c2 = st.columns(2)
-        with r5c1:
-            job_salary_net = st.number_input("Monatliches Netto-Gehalt (€) 📌", value=2400, step=None, help="Dieser Wert ist typischerweise vorgegeben, kann aber von Ihnen angepasst werden.")
-        with r5c2:
-            other_income = st.number_input("Andere Einkommensquellen (€)", value=0, step=None)
-
-        total_monthly_income = job_salary_net + other_income
-        st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Gesamtes monatliches Einkommen: <b>€{format_eur(total_monthly_income)}</b></div>', unsafe_allow_html=True)
-
-
-# --- ROW 3: Laufende Nebenkosten ---
-row3_col1, row3_col2 = st.columns(2)
-
-with row3_col1:
     with st.container(border=True):
         st.header("Laufende Nebenkosten (Jahr)")
         nk1c1, nk1c2, nk1c3 = st.columns(3)
@@ -214,7 +183,7 @@ with row3_col1:
         with nk3c3:
             st.markdown(f'<div class="calculated-result" style="margin-top: 32px;">Monatliche Nebenkosten: <b>€{format_eur(monthly_nebenkosten_new)}</b></div>', unsafe_allow_html=True)
 
-with row3_col2:
+with row2_col2:
     with st.container(border=True):
         st.header("Laufende Nebenkosten (Jahr)")
         nko1c1, nko1c2, nko1c3 = st.columns(3)
@@ -248,10 +217,40 @@ with row3_col2:
             st.markdown(f'<div class="calculated-result" style="margin-top: 32px;">Monatliche Nebenkosten: <b>€{format_eur(monthly_nebenkosten_old)}</b></div>', unsafe_allow_html=True)
 
 
-# --- ROW 4: Private Laufende Kosten | Finanzielle Analyse ---
-row4_col1, row4_col2 = st.columns(2)
+# --- ROW 3: Stacked Left Column vs Finanzielle Analyse Right Column ---
+# We use st.columns(2) to align the big modules
+row3_col1, row3_col2 = st.columns(2)
 
-with row4_col1:
+with row3_col1:
+    with st.container(border=True):
+        st.header("Hypotheken-Details")
+        h4c1, h4c2 = st.columns(2)
+        with h4c1:
+            interest_rate = st.number_input("Zinssatz der Hypothek (%)", value=3.5, step=None)
+        with h4c2:
+            duration_years = st.number_input("Laufzeit der Hypothek (Jahre)", value=15, step=None)
+
+        if loan_amount <= 0:
+            actual_monthly_payment = 0.0
+            st.success("Ihr Eigenkapital deckt alle Kosten! Keine Hypothek erforderlich.")
+        else:
+            monthly_interest_rate = (interest_rate / 100) / 12
+            total_months = duration_years * 12
+            actual_monthly_payment = -npf.pmt(monthly_interest_rate, total_months, loan_amount)
+
+        st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Erforderliche monatliche Rate (Kredit): <b>€{format_eur(actual_monthly_payment)}</b></div>', unsafe_allow_html=True)
+
+    with st.container(border=True):
+        st.header("Einkommen")
+        r5c1, r5c2 = st.columns(2)
+        with r5c1:
+            job_salary_net = st.number_input("Monatliches Netto-Gehalt (€) 📌", value=2400, step=None, help="Dieser Wert ist typischerweise vorgegeben, kann aber von Ihnen angepasst werden.")
+        with r5c2:
+            other_income = st.number_input("Andere Einkommensquellen (€)", value=0, step=None)
+
+        total_monthly_income = job_salary_net + other_income
+        st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Gesamtes monatliches Einkommen: <b>€{format_eur(total_monthly_income)}</b></div>', unsafe_allow_html=True)
+
     with st.container(border=True):
         st.header("Laufende Kosten (Privat)")
         pr1c1, pr1c2, pr1c3 = st.columns(3)
@@ -265,7 +264,8 @@ with row4_col1:
         monthly_nebenkosten_privat = priv_nahrung + priv_versicherungen + priv_sonstiges
         st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Monatliche Privatkosten: <b>€{format_eur(monthly_nebenkosten_privat)}</b></div>', unsafe_allow_html=True)
 
-with row4_col2:
+
+with row3_col2:
     with st.container(border=True):
         st.header("Finanzielle Analyse")
 
