@@ -119,6 +119,12 @@ with row1_col2:
         with r4c3:
             tax_rate_rent = st.number_input("Pausch. Steuersatz Mieterträge (%)", value=25.0, step=None, help="Puffer für die Einkommensteuer auf den Netto-Mietüberschuss.")
 
+        r4a_1, r4a_2 = st.columns(2)
+        with r4a_1:
+            afa_old_house = st.number_input("Jährliche Gebäudeabschreibung (AfA) in €", value=0, step=None, help="Mindert die Steuerlast, aber nicht den Cashflow.")
+        with r4a_2:
+            mietausfallwagnis_percent = st.number_input("Mietausfallwagnis (%)", value=3.0, step=None, help="Simuliert Leerstand und Mieterwechsel.")
+
         yearly_rent = monthly_rent * 12
         rent_result_placeholder = st.empty()
 
@@ -176,11 +182,11 @@ with row2_col1:
         with nk2c2:
             nk_verbrauch_new = st.number_input("Verbrauchskosten", value=4020, step=None, key="nk_verbr_new")
         with nk2c3:
-            nk_instandhaltung_new = st.number_input("Instandhaltungsrücklage", value=500, step=None, key="nk_inst_new", help="Sollte ca. 1-2 € pro m² pro Monat betragen")
+            pass
         with nk2c4:
             pass
 
-        yearly_nebenkosten_new = nk_versicherung_new + nk_grundsteuer_new + nk_muell_new + nk_wasser_new + nk_schornstein_new + nk_verbrauch_new + nk_instandhaltung_new
+        yearly_nebenkosten_new = nk_versicherung_new + nk_grundsteuer_new + nk_muell_new + nk_wasser_new + nk_schornstein_new + nk_verbrauch_new
         monthly_nebenkosten_new = yearly_nebenkosten_new / 12
 
         nk3c1, nk3c2, nk3c3, nk3c4 = st.columns(4)
@@ -215,11 +221,10 @@ with row2_col2:
         with nko2c3:
             nk_verbrauch_old = st.number_input("Verbrauchskosten 📌", value=4020, step=None, key="nk_verbr_old", help="Dieser Wert ist typischerweise vorgegeben, kann aber von Ihnen angepasst werden.")
         with nko2c4:
-            nk_instandhaltung_old = st.number_input("Instandhaltungsrücklage", value=500, step=None, key="nk_inst_old", help="Sollte ca. 1-2 € pro m² pro Monat betragen")
+            pass
 
-        yearly_nebenkosten_old = nk_haftpflicht_old + nk_versicherung_old + nk_grundsteuer_old + nk_muell_old + nk_wasser_old + nk_schornstein_old + nk_verbrauch_old + nk_instandhaltung_old
+        yearly_nebenkosten_old = nk_haftpflicht_old + nk_versicherung_old + nk_grundsteuer_old + nk_muell_old + nk_wasser_old + nk_schornstein_old + nk_verbrauch_old
         monthly_nebenkosten_old = yearly_nebenkosten_old / 12
-        monthly_instandhaltung_old = nk_instandhaltung_old / 12
 
         nko3c1, nko3c2, nko3c3, nko3c4 = st.columns(4)
         with nko3c1:
@@ -231,20 +236,24 @@ with row2_col2:
         with nko3c4:
             pass
 
-        # Now that we have monthly_instandhaltung_old, we can populate the rent_result_placeholder
-        net_rental_profit_before_tax = monthly_rent - monthly_instandhaltung_old
-        if net_rental_profit_before_tax > 0:
-            rental_tax = net_rental_profit_before_tax * (tax_rate_rent / 100)
-            net_rental_surplus = net_rental_profit_before_tax - rental_tax
+        real_monthly_rent = monthly_rent * (1 - (mietausfallwagnis_percent / 100))
+        monthly_afa_old = afa_old_house / 12
+
+        tax_base = real_monthly_rent - monthly_afa_old
+        if tax_base > 0:
+            rental_tax = tax_base * (tax_rate_rent / 100)
         else:
-            net_rental_surplus = net_rental_profit_before_tax
+            rental_tax = 0.0
+
+        # The net rental cash flow is the real rent minus the taxes paid
+        net_rental_surplus = real_monthly_rent - rental_tax
 
         with rent_result_placeholder.container():
             r4_res1, r4_res2, r4_res3 = st.columns(3)
             with r4_res1:
                 st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Jährliche Mieteinnahmen (Kaltmiete): <b>€{format_eur(yearly_rent)}</b></div>', unsafe_allow_html=True)
             with r4_res2:
-                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Netto-Mietüberschuss (inkl. Steuer): <b>€{format_eur(net_rental_surplus)}</b></div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Netto-Mietüberschuss (nach Steuerabzug): <b>€{format_eur(net_rental_surplus)}</b><br><small style="font-size: 0.8em; color: #666;">(Miete - Mietausfallwagnis - Steuern)</small></div>', unsafe_allow_html=True)
             with r4_res3:
                 pass
 
@@ -306,6 +315,16 @@ with row3_col1:
         with pr2c3:
             pass
 
+    with st.container(border=True):
+        st.header("Private Sparraten / Rücklagen (mtl.)")
+        sr1, sr2 = st.columns(2)
+        with sr1:
+            inst_new_house = st.number_input("Instandhaltungsrücklage Neues Haus", value=500, step=None, help="Sollte ca. 1-2 € pro m² pro Monat betragen")
+        with sr2:
+            inst_old_house = st.number_input("Instandhaltungsrücklage Altes Haus", value=500, step=None, help="Sollte ca. 1-2 € pro m² pro Monat betragen")
+
+        total_monthly_savings = inst_new_house + inst_old_house
+
 
 with row3_col2:
     with st.container(border=True):
@@ -333,8 +352,8 @@ with row3_col2:
         with cf_col1:
             st.subheader("Szenario A (Vermietet)")
 
-            # Tax logic for rental (already calculated above)
-            net_monthly_cash_flow_a = total_monthly_income + net_rental_surplus - total_monthly_burden
+            # Scenario A: deduct both savings rates
+            net_monthly_cash_flow_a = total_monthly_income + net_rental_surplus - total_monthly_burden - total_monthly_savings
             net_yearly_cash_flow_a = net_monthly_cash_flow_a * 12
 
             box_class_a = "cashflow-positive" if net_monthly_cash_flow_a >= 0 else "cashflow-negative"
@@ -349,7 +368,8 @@ with row3_col2:
         with cf_col2:
             st.subheader("Szenario B (Leerstand)")
 
-            net_monthly_cash_flow_b = total_monthly_income - total_monthly_burden - monthly_nebenkosten_old
+            # Scenario B: empty house means no rent, owner pays old house Nebenkosten, and still saves
+            net_monthly_cash_flow_b = total_monthly_income - total_monthly_burden - monthly_nebenkosten_old - total_monthly_savings
             net_yearly_cash_flow_b = net_monthly_cash_flow_b * 12
 
             box_class_b = "cashflow-positive" if net_monthly_cash_flow_b >= 0 else "cashflow-negative"

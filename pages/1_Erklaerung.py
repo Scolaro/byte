@@ -29,30 +29,33 @@ Hier wird der finanzielle Grundstein für Ihr neues Eigenheim gelegt:
 
 ### 2. Das Alte Haus (Vermietung)
 Hier erfassen Sie die wirtschaftlichen Eckdaten Ihrer bestehenden Immobilie:
-- **Mieteinnahmen:** Die monatliche Kaltmiete, die Sie vom Mieter erhalten.
+- **Mieteinnahmen & Mietausfallwagnis:** Die monatliche Kaltmiete wird um das von Ihnen angegebene Mietausfallwagnis reduziert. Dies simuliert realistische Einnahmeverluste durch Leerstand oder Mieterwechsel.
 - **Reparaturen vor Vermietung:** Diese Kosten werden direkt auf den neuen Kreditbetrag aufgeschlagen, da sie in der Regel zeitnah zum Auszug anfallen.
-- **Steuern:** Mieteinnahmen sind steuerpflichtig. Wir ziehen von der Kaltmiete zunächst die nicht-umlagefähigen Kosten (wie die Instandhaltungsrücklage) ab und versteuern den verbleibenden Überschuss mit dem von Ihnen gewählten Pauschalsatz. Nur dieser **Netto-Mietüberschuss** fließt positiv in Ihren Cashflow ein.
+- **Gebäudeabschreibung (AfA) & Steuern:** Mieteinnahmen sind steuerpflichtig. Die Steuerlast berechnet sich aus der realen Miete (Miete abzgl. Ausfallwagnis) abzüglich der Gebäudeabschreibung (AfA). Da die AfA eine reine Steuervergünstigung ist, verlässt das Geld nicht Ihr Konto.
+- **Netto-Mietüberschuss:** Das ist der tatsächliche Betrag, der auf Ihrem Konto landet: Die reale Miete abzüglich der berechneten Steuern. Er fließt positiv in Ihren Cashflow ein.
 
 ### 3. Laufende Nebenkosten
 Für beide Häuser erfassen Sie hier die jährlichen Betriebskosten.
 - **Neues Haus:** Diese Kosten tragen Sie in voller Höhe selbst. (Hinweis: Als Selbstnutzer benötigen Sie hier keine spezielle Grundbesitzerhaftpflicht, da dies meist über die private Haftpflicht abgedeckt ist).
-- **Altes Haus:** Bei Vermietung (Szenario A) werden die umlagefähigen Kosten über die Nebenkostenabrechnung vom Mieter getragen. Sie müssen lediglich die Instandhaltungsrücklage von der Miete abziehen. Steht das Haus jedoch leer (Szenario B), fallen *alle* Kosten (inklusive der Haus- und Grundbesitzerhaftpflicht) auf Sie zurück.
+- **Altes Haus:** Bei Vermietung (Szenario A) werden die hier angegebenen umlagefähigen Kosten über die Nebenkostenabrechnung vom Mieter getragen und beeinflussen Ihren Cashflow nicht negativ. Steht das Haus jedoch leer (Szenario B), fallen *alle* Kosten (inklusive der Haus- und Grundbesitzerhaftpflicht) auf Sie zurück.
+*Hinweis: Instandhaltungsrücklagen zählen zu den privaten Sparraten und werden getrennt berechnet.*
 
-### 4. Einkommen & Privatkosten
+### 4. Einkommen, Privatkosten & Rücklagen
 Damit der Cashflow realistisch ist, betrachten wir Ihr verfügbares Budget:
 - Ihr **monatliches Netto-Gehalt** und **weitere Einkommensquellen** bilden die Basis.
 - Davon abgezogen werden die **Laufenden Kosten (Privat)** wie Nahrungsmittel, Versicherungen und Sonstiges.
+- Ebenfalls abgezogen werden die **Privaten Sparraten / Rücklagen** (wie z. B. die Instandhaltungsrücklagen für beide Häuser). Das garantiert, dass das Sparen für künftige Reparaturen aus Ihrem Netto-Einkommen bestritten wird.
 
 ### 5. Finanzielle Analyse (Szenarien)
-Die abschließende Analyse führt alle Ausgaben und Einnahmen zusammen, um Ihren Netto-Cashflow zu ermitteln.
+Die abschließende Analyse führt alle Ausgaben und Einnahmen zusammen, um Ihren finalen Netto-Cashflow zu ermitteln.
 
 Die **Gesamte monatliche Belastung** setzt sich zusammen aus der Kreditrate für das neue Haus, den Nebenkosten des neuen Hauses und Ihren privaten Lebenshaltungskosten.
 
 * **Szenario A (Vermietet):**
-  Ihr Einkommen wird um den *versteuerten Netto-Mietüberschuss* ergänzt. Davon ziehen wir die gesamte monatliche Belastung ab.
+  Ihr Einkommen wird um den *Netto-Mietüberschuss (nach Steuern)* ergänzt. Davon ziehen wir die gesamte monatliche Belastung sowie Ihre privaten Sparraten (Instandhaltung) ab.
 
 * **Szenario B (Leerstand):**
-  Das alte Haus bringt keine Mieteinnahmen. Ihr Einkommen muss nun die gesamte monatliche Belastung **sowie zusätzlich** die vollen monatlichen Nebenkosten des leerstehenden alten Hauses tragen.
+  Das alte Haus bringt keine Mieteinnahmen. Ihr Einkommen muss nun die gesamte monatliche Belastung, Ihre privaten Sparraten **sowie zusätzlich** die vollen monatlichen Nebenkosten des leerstehenden alten Hauses tragen.
 
 Sollte der Cashflow-Wert rot sein, übersteigen Ihre monatlichen Ausgaben Ihre Einnahmen.
 """)
