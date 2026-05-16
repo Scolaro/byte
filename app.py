@@ -117,6 +117,12 @@ with right_col:
         yearly_rent = monthly_rent * 12
         st.markdown(f'<div class="calculated-result">Jährliche Mieteinnahmen (Kaltmiete): <b>€{format_eur(yearly_rent)}</b></div>', unsafe_allow_html=True)
 
+        # Add vertical spacer to match the height of "Das Neue Haus" so that the next rows align
+        st.write("")
+        st.write("")
+        st.write("")
+        st.write("")
+
 with left_col:
     with st.container(border=True):
         st.header("1. Das Neue Haus (Kauf)")
@@ -129,12 +135,11 @@ with left_col:
         with r1c3:
             renovations_new = st.number_input("Reparaturen vor Einzug", value=25000)
 
-        r2c1, r2c2, r2c3 = st.columns(3)
-
         # Calculate dynamic values now that renovations_old is available
         closing_costs_eur = purchase_price * (closing_costs_percent / 100)
         total_capital_needed = purchase_price + closing_costs_eur + renovations_new + renovations_old
 
+        r2c1, r2c2, r2c3 = st.columns(3)
         with r2c1:
             st.markdown(f'<div class="calculated-result">Benötigtes Kapital: <b>€{format_eur(total_capital_needed)}</b></div>', unsafe_allow_html=True)
         with r2c2:
@@ -173,15 +178,19 @@ with left_col:
         with nk2c3:
             nk_verbrauch_new = st.number_input("Verbrauchskosten", value=5000, key="nk_verbr_new")
 
+        yearly_nebenkosten_new = nk_versicherung_new + nk_grundsteuer_new + nk_muell_new + nk_wasser_new + nk_schornstein_new + nk_verbrauch_new
+
         nk3c1, nk3c2, nk3c3 = st.columns(3)
         with nk3c1:
             nk_instandhaltung_new = st.number_input("Instandhaltungsrücklage", value=500, key="nk_inst_new", help="Sollte ca. 1-2 € pro m² pro Monat betragen")
 
-        yearly_nebenkosten_new = nk_versicherung_new + nk_grundsteuer_new + nk_muell_new + nk_wasser_new + nk_schornstein_new + nk_verbrauch_new + nk_instandhaltung_new
+        yearly_nebenkosten_new = yearly_nebenkosten_new + nk_instandhaltung_new
         monthly_nebenkosten_new = yearly_nebenkosten_new / 12
 
-        st.markdown(f'<div class="calculated-result">Jährliche Nebenkosten: <b>€{format_eur(yearly_nebenkosten_new)}</b></div>', unsafe_allow_html=True)
-        st.markdown(f'<div class="calculated-result">Monatliche Nebenkosten: <b>€{format_eur(monthly_nebenkosten_new)}</b></div>', unsafe_allow_html=True)
+        with nk3c2:
+            st.markdown(f'<div class="calculated-result" style="margin-top: 32px;">Jährliche Nebenkosten: <b>€{format_eur(yearly_nebenkosten_new)}</b></div>', unsafe_allow_html=True)
+        with nk3c3:
+            st.markdown(f'<div class="calculated-result" style="margin-top: 32px;">Monatliche Nebenkosten: <b>€{format_eur(monthly_nebenkosten_new)}</b></div>', unsafe_allow_html=True)
 
     with st.container(border=True):
         st.header("Hypotheken-Details")
@@ -231,8 +240,7 @@ with right_col:
         st.header("Laufende Nebenkosten (Jahr)")
         nko1c1, nko1c2, nko1c3 = st.columns(3)
         with nko1c1:
-            # Using disabled=True to show the value is fixed
-            nk_haftpflicht_old = st.number_input("Haftpflicht", value=100, disabled=True, key="nk_haft_old", help="Dieser Wert ist vorgegeben und kann nicht geändert werden.")
+            nk_haftpflicht_old = st.number_input("Haftpflicht 📌", value=100, key="nk_haft_old", help="Dieser Wert ist typischerweise vorgegeben, kann aber von Ihnen angepasst werden.")
         with nko1c2:
             nk_grundsteuer_old = st.number_input("Grundsteuer", value=430, key="nk_gs_old")
         with nko1c3:
@@ -246,15 +254,19 @@ with right_col:
         with nko2c3:
             nk_verbrauch_old = st.number_input("Verbrauchskosten", value=5000, key="nk_verbr_old")
 
+        yearly_nebenkosten_old = nk_haftpflicht_old + nk_grundsteuer_old + nk_muell_old + nk_wasser_old + nk_schornstein_old + nk_verbrauch_old
+
         nko3c1, nko3c2, nko3c3 = st.columns(3)
         with nko3c1:
             nk_instandhaltung_old = st.number_input("Instandhaltungsrücklage", value=500, key="nk_inst_old", help="Sollte ca. 1-2 € pro m² pro Monat betragen")
 
-        yearly_nebenkosten_old = nk_haftpflicht_old + nk_grundsteuer_old + nk_muell_old + nk_wasser_old + nk_schornstein_old + nk_verbrauch_old + nk_instandhaltung_old
+        yearly_nebenkosten_old = yearly_nebenkosten_old + nk_instandhaltung_old
         monthly_nebenkosten_old = yearly_nebenkosten_old / 12
 
-        st.markdown(f'<div class="calculated-result">Jährliche Nebenkosten: <b>€{format_eur(yearly_nebenkosten_old)}</b></div>', unsafe_allow_html=True)
-        st.markdown(f'<div class="calculated-result">Monatliche Nebenkosten: <b>€{format_eur(monthly_nebenkosten_old)}</b></div>', unsafe_allow_html=True)
+        with nko3c2:
+            st.markdown(f'<div class="calculated-result" style="margin-top: 32px;">Jährliche Nebenkosten: <b>€{format_eur(yearly_nebenkosten_old)}</b></div>', unsafe_allow_html=True)
+        with nko3c3:
+            st.markdown(f'<div class="calculated-result" style="margin-top: 32px;">Monatliche Nebenkosten: <b>€{format_eur(monthly_nebenkosten_old)}</b></div>', unsafe_allow_html=True)
 
     with st.container(border=True):
         st.header("Finanzielle Analyse")
