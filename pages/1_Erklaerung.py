@@ -1,8 +1,22 @@
 import streamlit as st
 
-st.set_page_config(page_title="Hausprojekt-Rechner: Erklärung", layout="wide")
+st.set_page_config(page_title="Hausprojekt-Rechner: Erklärung", layout="wide", initial_sidebar_state="collapsed")
+
+# Hide the sidebar completely
+st.markdown("""
+<style>
+    [data-testid="collapsedControl"] {
+        display: none;
+    }
+    [data-testid="stSidebar"] {
+        display: none;
+    }
+</style>
+""", unsafe_allow_html=True)
 
 st.title("📖 Funktionsweise & Berechnungen")
+
+st.page_link("app.py", label="Zurück zum Hauptrechner", icon="🔙")
 
 st.markdown("""
 Diese Seite erklärt detailliert, wie der Hausprojekt-Rechner funktioniert, welche Annahmen getroffen werden und wie sich die Endergebnisse zusammensetzen.

@@ -2,7 +2,7 @@ import streamlit as st
 import numpy_financial as npf
 
 # Must be the first Streamlit command
-st.set_page_config(page_title="Hausprojekt-Rechner", layout="wide")
+st.set_page_config(page_title="Hausprojekt-Rechner", layout="wide", initial_sidebar_state="collapsed")
 
 # Inject custom CSS
 st.markdown("""
@@ -13,14 +13,28 @@ st.markdown("""
     padding-bottom: 0rem;
 }
 
-/* Hide Streamlit number input step up/down arrows */
+/* Hide the sidebar completely */
+[data-testid="collapsedControl"] {
+    display: none;
+}
+[data-testid="stSidebar"] {
+    display: none;
+}
+
+/* Hide Streamlit number input step up/down arrows natively */
+div[data-testid="stNumberInputStepUp"] {
+    display: none !important;
+}
+div[data-testid="stNumberInputStepDown"] {
+    display: none !important;
+}
+input[type=number] {
+    -moz-appearance: textfield;
+}
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
-}
-input[type=number] {
-    -moz-appearance: textfield;
 }
 
 /* Thicker borders for the st.container */
@@ -65,12 +79,6 @@ div[data-testid="stMetricValue"] {
     font-size: 2rem;
     font-weight: bold;
 }
-
-/* Highlight the Haftpflicht input field in green */
-div[data-testid="stNumberInput"]:has(label:contains("Haftpflicht")) input {
-    border: 2px solid #10b981 !important;
-    background-color: #ecfdf5 !important;
-}
 </style>
 """, unsafe_allow_html=True)
 
@@ -88,34 +96,38 @@ def format_eur(amount):
     return formatted.replace(",", "X").replace(".", ",").replace("X", ".")
 
 
-# --- ROW 1: Das Neue Haus | Das Alte Haus ---
-row1_col1, row1_col2 = st.columns(2)
+# Since values cross over between columns, we need to collect all inputs first,
+# then render the UI logic using placeholders or structured execution.
+# However, Streamlit executes top-to-bottom. To avoid rendering issues, we put
+# EVERYTHING inside the left/right columns block and use placeholders for values
+# that depend on inputs further down.
 
-with row1_col2:
+left_col, right_col = st.columns(2)
+
+with right_col:
     with st.container(border=True):
         st.header("2. Das Alte Haus (Vermietung)")
 
         r4c1, r4c2 = st.columns(2)
         with r4c1:
-            monthly_rent = st.number_input("Monatliche Mieteinnahmen", value=1400, step=None)
+            monthly_rent = st.number_input("Monatliche Mieteinnahmen", value=1400)
         with r4c2:
-            renovations_old = st.number_input("Reparaturen vor Vermietung", value=20000, step=None)
+            renovations_old = st.number_input("Reparaturen vor Vermietung", value=20000)
 
         yearly_rent = monthly_rent * 12
         st.markdown(f'<div class="calculated-result">Jährliche Mieteinnahmen (Kaltmiete): <b>€{format_eur(yearly_rent)}</b></div>', unsafe_allow_html=True)
 
-
-with row1_col1:
+with left_col:
     with st.container(border=True):
         st.header("1. Das Neue Haus (Kauf)")
 
         r1c1, r1c2, r1c3 = st.columns(3)
         with r1c1:
-            purchase_price = st.number_input("Kaufpreis (€)", value=500000, step=None)
+            purchase_price = st.number_input("Kaufpreis (€)", value=500000)
         with r1c2:
-            closing_costs_percent = st.number_input("Kaufnebenkosten (%)", value=8.0, step=None, help="In Hessen beträgt die Grunderwerbsteuer 6%. Notar und Grundbuchamt machen ca. 2% aus.")
+            closing_costs_percent = st.number_input("Kaufnebenkosten (%)", value=8.0, help="In Hessen beträgt die Grunderwerbsteuer 6%. Notar und Grundbuchamt machen ca. 2% aus.")
         with r1c3:
-            renovations_new = st.number_input("Reparaturen vor Einzug", value=25000, step=None)
+            renovations_new = st.number_input("Reparaturen vor Einzug", value=25000)
 
         r2c1, r2c2, r2c3 = st.columns(3)
 
@@ -128,26 +140,56 @@ with row1_col1:
         with r2c2:
             st.markdown(f'<div class="calculated-result">Kaufnebenkosten: <b>€{format_eur(closing_costs_eur)}</b></div>', unsafe_allow_html=True)
         with r2c3:
-            down_payment = st.number_input("Eigenkapital (€)", value=160000, step=None, help="Bargeld, das Sie für den Kauf, die Nebenkosten und Renovierungen einsetzen.")
-
-        loan_amount = total_capital_needed - down_payment
+            pass # reserved for future use or layout spacing
 
         r3c1, r3c2, r3c3 = st.columns(3)
         with r3c1:
-            st.markdown(f'<div class="calculated-result">Benötigter Kreditbetrag: <b>€{format_eur(loan_amount)}</b></div>', unsafe_allow_html=True)
+            # We must define loan_amount AFTER defining down_payment
+            down_payment_placeholder = st.empty()
+            loan_amount_placeholder = st.empty()
+        with r3c2:
+            pass
+        with r3c3:
+            down_payment = st.number_input("Eigenkapital (€)", value=160000, help="Bargeld, das Sie für den Kauf, die Nebenkosten und Renovierungen einsetzen.")
 
+        loan_amount = total_capital_needed - down_payment
+        loan_amount_placeholder.markdown(f'<div class="calculated-result">Benötigter Kreditbetrag: <b>€{format_eur(loan_amount)}</b></div>', unsafe_allow_html=True)
 
-# --- ROW 2: Hypotheken-Details | Einkommen ---
-row2_col1, row2_col2 = st.columns(2)
+    with st.container(border=True):
+        st.header("Laufende Nebenkosten (Jahr)")
+        nk1c1, nk1c2, nk1c3 = st.columns(3)
+        with nk1c1:
+            nk_versicherung_new = st.number_input("Wohngebäudevers.", value=800, key="nk_vers_new")
+        with nk1c2:
+            nk_grundsteuer_new = st.number_input("Grundsteuer", value=600, key="nk_gs_new")
+        with nk1c3:
+            nk_muell_new = st.number_input("Müll/Straßenreinigung", value=200, key="nk_muell_new")
 
-with row2_col1:
+        nk2c1, nk2c2, nk2c3 = st.columns(3)
+        with nk2c1:
+            nk_wasser_new = st.number_input("Abwasser/Regen", value=200, key="nk_wasser_new")
+        with nk2c2:
+            nk_schornstein_new = st.number_input("Schornsteinfeger/Heizung", value=300, key="nk_schorn_new")
+        with nk2c3:
+            nk_verbrauch_new = st.number_input("Verbrauchskosten", value=5000, key="nk_verbr_new")
+
+        nk3c1, nk3c2, nk3c3 = st.columns(3)
+        with nk3c1:
+            nk_instandhaltung_new = st.number_input("Instandhaltungsrücklage", value=500, key="nk_inst_new", help="Sollte ca. 1-2 € pro m² pro Monat betragen")
+
+        yearly_nebenkosten_new = nk_versicherung_new + nk_grundsteuer_new + nk_muell_new + nk_wasser_new + nk_schornstein_new + nk_verbrauch_new + nk_instandhaltung_new
+        monthly_nebenkosten_new = yearly_nebenkosten_new / 12
+
+        st.markdown(f'<div class="calculated-result">Jährliche Nebenkosten: <b>€{format_eur(yearly_nebenkosten_new)}</b></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="calculated-result">Monatliche Nebenkosten: <b>€{format_eur(monthly_nebenkosten_new)}</b></div>', unsafe_allow_html=True)
+
     with st.container(border=True):
         st.header("Hypotheken-Details")
-        r4c1, r4c2 = st.columns(2)
-        with r4c1:
-            interest_rate = st.number_input("Zinssatz der Hypothek (%)", value=3.5, step=None)
-        with r4c2:
-            duration_years = st.number_input("Laufzeit der Hypothek (Jahre)", value=15, step=None)
+        h4c1, h4c2 = st.columns(2)
+        with h4c1:
+            interest_rate = st.number_input("Zinssatz der Hypothek (%)", value=3.5)
+        with h4c2:
+            duration_years = st.number_input("Laufzeit der Hypothek (Jahre)", value=15)
 
         if loan_amount <= 0:
             actual_monthly_payment = 0.0
@@ -159,73 +201,54 @@ with row2_col1:
 
         st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Erforderliche monatliche Rate (Kredit): <b>€{format_eur(actual_monthly_payment)}</b></div>', unsafe_allow_html=True)
 
-with row2_col2:
     with st.container(border=True):
         st.header("Einkommen")
         r5c1, r5c2 = st.columns(2)
         with r5c1:
-            job_salary_net = st.number_input("Monatliches Netto-Gehalt (€)", value=2400, step=None, help="Ihr monatliches Nettoeinkommen.")
+            job_salary_net = st.number_input("Monatliches Netto-Gehalt (€)", value=2400, help="Ihr monatliches Nettoeinkommen.")
         with r5c2:
-            other_income = st.number_input("Andere Einkommensquellen (€)", value=0, step=None)
+            other_income = st.number_input("Andere Einkommensquellen (€)", value=0)
 
         total_monthly_income = job_salary_net + other_income
         st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Gesamtes monatliches Einkommen: <b>€{format_eur(total_monthly_income)}</b></div>', unsafe_allow_html=True)
 
-
-# --- ROW 3: Laufende Nebenkosten | Laufende Nebenkosten ---
-row3_col1, row3_col2 = st.columns(2)
-
-with row3_col1:
     with st.container(border=True):
-        st.header("Laufende Nebenkosten (Jahr)")
-        nk1c1, nk1c2, nk1c3 = st.columns(3)
-        with nk1c1:
-            nk_versicherung_new = st.number_input("Wohngebäudevers.", value=800, step=None, key="nk_vers_new")
-        with nk1c2:
-            nk_grundsteuer_new = st.number_input("Grundsteuer", value=600, step=None, key="nk_gs_new")
-        with nk1c3:
-            nk_muell_new = st.number_input("Müll/Straßenreinigung", value=200, step=None, key="nk_muell_new")
+        st.header("Laufende Kosten (Privat)")
+        pr1c1, pr1c2, pr1c3 = st.columns(3)
+        with pr1c1:
+            priv_nahrung = st.number_input("Nahrungsmittel", value=400)
+        with pr1c2:
+            priv_versicherungen = st.number_input("Versicherungen", value=200)
+        with pr1c3:
+            priv_sonstiges = st.number_input("Sonstiges", value=300)
 
-        nk2c1, nk2c2, nk2c3 = st.columns(3)
-        with nk2c1:
-            nk_wasser_new = st.number_input("Abwasser/Regen", value=200, step=None, key="nk_wasser_new")
-        with nk2c2:
-            nk_schornstein_new = st.number_input("Schornsteinfeger/Heizung", value=300, step=None, key="nk_schorn_new")
-        with nk2c3:
-            nk_verbrauch_new = st.number_input("Verbrauchskosten", value=5000, step=None, key="nk_verbr_new")
+        monthly_nebenkosten_privat = priv_nahrung + priv_versicherungen + priv_sonstiges
+        st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Monatliche Privatkosten: <b>€{format_eur(monthly_nebenkosten_privat)}</b></div>', unsafe_allow_html=True)
 
-        nk3c1, nk3c2, nk3c3 = st.columns(3)
-        with nk3c1:
-            nk_instandhaltung_new = st.number_input("Instandhaltungsrücklage", value=500, step=None, key="nk_inst_new", help="Sollte ca. 1-2 € pro m² pro Monat betragen")
 
-        yearly_nebenkosten_new = nk_versicherung_new + nk_grundsteuer_new + nk_muell_new + nk_wasser_new + nk_schornstein_new + nk_verbrauch_new + nk_instandhaltung_new
-        monthly_nebenkosten_new = yearly_nebenkosten_new / 12
-
-        st.markdown(f'<div class="calculated-result">Jährliche Nebenkosten: <b>€{format_eur(yearly_nebenkosten_new)}</b></div>', unsafe_allow_html=True)
-        st.markdown(f'<div class="calculated-result">Monatliche Nebenkosten: <b>€{format_eur(monthly_nebenkosten_new)}</b></div>', unsafe_allow_html=True)
-
-with row3_col2:
+with right_col:
     with st.container(border=True):
         st.header("Laufende Nebenkosten (Jahr)")
         nko1c1, nko1c2, nko1c3 = st.columns(3)
         with nko1c1:
-            nk_haftpflicht_old = st.number_input("Haftpflicht", value=100, step=None, key="nk_haft_old")
+            # Using disabled=True to show the value is fixed
+            nk_haftpflicht_old = st.number_input("Haftpflicht", value=100, disabled=True, key="nk_haft_old", help="Dieser Wert ist vorgegeben und kann nicht geändert werden.")
         with nko1c2:
-            nk_grundsteuer_old = st.number_input("Grundsteuer", value=430, step=None, key="nk_gs_old")
+            nk_grundsteuer_old = st.number_input("Grundsteuer", value=430, key="nk_gs_old")
         with nko1c3:
-            nk_muell_old = st.number_input("Müll/Straßenreinigung", value=200, step=None, key="nk_muell_old")
+            nk_muell_old = st.number_input("Müll/Straßenreinigung", value=200, key="nk_muell_old")
 
         nko2c1, nko2c2, nko2c3 = st.columns(3)
         with nko2c1:
-            nk_wasser_old = st.number_input("Abwasser/Regen", value=200, step=None, key="nk_wasser_old")
+            nk_wasser_old = st.number_input("Abwasser/Regen", value=200, key="nk_wasser_old")
         with nko2c2:
-            nk_schornstein_old = st.number_input("Schornsteinfeger/Heizung", value=300, step=None, key="nk_schorn_old")
+            nk_schornstein_old = st.number_input("Schornsteinfeger/Heizung", value=300, key="nk_schorn_old")
         with nko2c3:
-            nk_verbrauch_old = st.number_input("Verbrauchskosten", value=5000, step=None, key="nk_verbr_old")
+            nk_verbrauch_old = st.number_input("Verbrauchskosten", value=5000, key="nk_verbr_old")
 
         nko3c1, nko3c2, nko3c3 = st.columns(3)
         with nko3c1:
-            nk_instandhaltung_old = st.number_input("Instandhaltungsrücklage", value=500, step=None, key="nk_inst_old", help="Sollte ca. 1-2 € pro m² pro Monat betragen")
+            nk_instandhaltung_old = st.number_input("Instandhaltungsrücklage", value=500, key="nk_inst_old", help="Sollte ca. 1-2 € pro m² pro Monat betragen")
 
         yearly_nebenkosten_old = nk_haftpflicht_old + nk_grundsteuer_old + nk_muell_old + nk_wasser_old + nk_schornstein_old + nk_verbrauch_old + nk_instandhaltung_old
         monthly_nebenkosten_old = yearly_nebenkosten_old / 12
@@ -233,25 +256,6 @@ with row3_col2:
         st.markdown(f'<div class="calculated-result">Jährliche Nebenkosten: <b>€{format_eur(yearly_nebenkosten_old)}</b></div>', unsafe_allow_html=True)
         st.markdown(f'<div class="calculated-result">Monatliche Nebenkosten: <b>€{format_eur(monthly_nebenkosten_old)}</b></div>', unsafe_allow_html=True)
 
-
-# --- ROW 4: Private Laufende Kosten | Finanzielle Analyse ---
-row4_col1, row4_col2 = st.columns(2)
-
-with row4_col1:
-    with st.container(border=True):
-        st.header("Laufende Kosten (Privat)")
-        pr1c1, pr1c2, pr1c3 = st.columns(3)
-        with pr1c1:
-            priv_nahrung = st.number_input("Nahrungsmittel", value=400, step=None)
-        with pr1c2:
-            priv_versicherungen = st.number_input("Versicherungen", value=200, step=None)
-        with pr1c3:
-            priv_sonstiges = st.number_input("Sonstiges", value=300, step=None)
-
-        monthly_nebenkosten_privat = priv_nahrung + priv_versicherungen + priv_sonstiges
-        st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Monatliche Privatkosten: <b>€{format_eur(monthly_nebenkosten_privat)}</b></div>', unsafe_allow_html=True)
-
-with row4_col2:
     with st.container(border=True):
         st.header("Finanzielle Analyse")
 
