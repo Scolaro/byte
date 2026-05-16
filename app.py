@@ -97,12 +97,12 @@ def format_eur(amount):
 
 # --- WE EXTRACT ALL INPUTS FIRST WITHOUT UI LAYOUT SO WE CAN COMPUTE GLOBALLY ---
 
-# --- ROW 1: Das Neue Haus | Das Alte Haus ---
 row1_col1, row1_col2 = st.columns(2)
 
 with row1_col2:
     with st.container(border=True):
         st.header("2. Das Alte Haus (Vermietung)")
+
         r4c1, r4c2 = st.columns(2)
         with r4c1:
             monthly_rent = st.number_input("Monatliche Mieteinnahmen", value=1400, step=None)
@@ -113,6 +113,8 @@ with row1_col2:
         st.markdown(f'<div class="calculated-result">Jährliche Mieteinnahmen (Kaltmiete): <b>€{format_eur(yearly_rent)}</b></div>', unsafe_allow_html=True)
 
         # Add vertical spacer to match the height of "Das Neue Haus" so that the next rows align perfectly
+        st.write("")
+        st.write("")
         st.write("")
         st.write("")
         st.write("")
@@ -130,21 +132,25 @@ with row1_col1:
         with r1c3:
             renovations_new = st.number_input("Reparaturen vor Einzug", value=25000, step=None)
 
-        # Calculate dynamic values
+        # Calculate dynamic values now that renovations_old is available
         closing_costs_eur = purchase_price * (closing_costs_percent / 100)
         total_capital_needed = purchase_price + closing_costs_eur + renovations_new + renovations_old
 
         r2c1, r2c2, r2c3 = st.columns(3)
+        with r2c1:
+            st.markdown(f'<div class="calculated-result" style="margin-top: 32px;">Benötigtes Kapital: <b>€{format_eur(total_capital_needed)}</b></div>', unsafe_allow_html=True)
+
+        with r2c2:
+            st.markdown(f'<div class="calculated-result" style="margin-top: 32px;">Kaufnebenkosten: <b>€{format_eur(closing_costs_eur)}</b></div>', unsafe_allow_html=True)
+
         with r2c3:
             down_payment = st.number_input("Eigenkapital (€)", value=160000, step=None, help="Bargeld, das Sie für den Kauf, die Nebenkosten und Renovierungen einsetzen.")
 
         loan_amount = total_capital_needed - down_payment
 
-        with r2c1:
-            st.markdown(f'<div class="calculated-result" style="margin-top: 32px;">Benötigtes Kapital: <b>€{format_eur(total_capital_needed)}</b></div>', unsafe_allow_html=True)
+        r3c1, r3c2, r3c3 = st.columns(3)
+        with r3c1:
             st.markdown(f'<div class="calculated-result">Benötigter Kreditbetrag: <b>€{format_eur(loan_amount)}</b></div>', unsafe_allow_html=True)
-        with r2c2:
-            st.markdown(f'<div class="calculated-result" style="margin-top: 32px;">Kaufnebenkosten: <b>€{format_eur(closing_costs_eur)}</b></div>', unsafe_allow_html=True)
 
 
 # --- ROW 2: Laufende Nebenkosten ---
@@ -218,7 +224,6 @@ with row2_col2:
 
 
 # --- ROW 3: Stacked Left Column vs Finanzielle Analyse Right Column ---
-# We use st.columns(2) to align the big modules
 row3_col1, row3_col2 = st.columns(2)
 
 with row3_col1:
@@ -318,6 +323,20 @@ with row3_col2:
             </div>
             """, unsafe_allow_html=True)
             st.write(f"**Jährlicher Netto Cashflow:** €{format_eur(net_yearly_cash_flow_b)}")
+
+        # Add vertical spacers so the single box matches the height of the 3 stacked boxes on the left
+        st.write("")
+        st.write("")
+        st.write("")
+        st.write("")
+        st.write("")
+        st.write("")
+        st.write("")
+        st.write("")
+        st.write("")
+        st.write("")
+        st.write("")
+        st.write("")
 
 
 # Add spacing at the bottom of the page
