@@ -13,6 +13,16 @@ st.markdown("""
     padding-bottom: 0rem;
 }
 
+/* Hide Streamlit number input step up/down arrows */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
 /* Thicker borders for the st.container */
 div[data-testid="stVerticalBlock"] > div[style*="border"] {
     border-width: 2px !important;
@@ -103,18 +113,16 @@ with row1_col1:
         closing_costs_eur = purchase_price * (closing_costs_percent / 100)
         total_capital_needed = purchase_price + closing_costs_eur + renovations_new + renovations_old
 
-        with r2c1:
-            st.markdown(f'<div class="calculated-result">Benötigtes Kapital (Gesamt): <b>€{format_eur(total_capital_needed)}</b></div>', unsafe_allow_html=True)
-        with r2c2:
-            st.markdown(f'<div class="calculated-result">Berechnete Kaufnebenkosten: <b>€{format_eur(closing_costs_eur)}</b></div>', unsafe_allow_html=True)
         with r2c3:
             down_payment = st.number_input("Eigenkapital (€)", value=160000, step=None, help="Bargeld, das Sie für den Kauf, die Nebenkosten und Renovierungen einsetzen.")
 
         loan_amount = total_capital_needed - down_payment
 
-        r3c1, r3c2, r3c3 = st.columns(3)
-        with r3c1:
+        with r2c1:
+            st.markdown(f'<div class="calculated-result">Kreditkapital: <b>€{format_eur(total_capital_needed)}</b></div>', unsafe_allow_html=True)
             st.markdown(f'<div class="calculated-result">Benötigter Kreditbetrag: <b>€{format_eur(loan_amount)}</b></div>', unsafe_allow_html=True)
+        with r2c2:
+            st.markdown(f'<div class="calculated-result">Kaufnebenkosten: <b>€{format_eur(closing_costs_eur)}</b></div>', unsafe_allow_html=True)
 
 
 # --- ROW 2: Hypotheken-Details | Einkommen ---
@@ -182,7 +190,7 @@ with row3_col1:
         monthly_nebenkosten_new = yearly_nebenkosten_new / 12
 
         st.markdown(f'<div class="calculated-result">Jährliche Nebenkosten: <b>€{format_eur(yearly_nebenkosten_new)}</b></div>', unsafe_allow_html=True)
-        st.markdown(f'<div class="calculated-result">Monatliche Nebenkosten: <b>€{format_eur(monthly_nebenkosten_new)}</b></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="calculated-result">Monatliche Nebenkosten (Haus): <b>€{format_eur(monthly_nebenkosten_new)}</b></div>', unsafe_allow_html=True)
 
 with row3_col2:
     with st.container(border=True):
@@ -214,30 +222,47 @@ with row3_col2:
         st.markdown(f'<div class="calculated-result">Monatliche Nebenkosten: <b>€{format_eur(monthly_nebenkosten_old)}</b></div>', unsafe_allow_html=True)
 
 
-# --- ROW 4: Finanzielle Analyse | Cashflow ---
+# --- ROW 4: Private Laufende Kosten ---
 row4_col1, row4_col2 = st.columns(2)
 
 with row4_col1:
     with st.container(border=True):
-        st.header("3. Finanzielle Analyse")
+        st.header("Private laufende Kosten")
+        pr1c1, pr1c2, pr1c3 = st.columns(3)
+        with pr1c1:
+            priv_nahrung = st.number_input("Nahrungsmittel", value=400, step=None)
+        with pr1c2:
+            priv_versicherungen = st.number_input("Versicherungen", value=200, step=None)
+        with pr1c3:
+            priv_sonstiges = st.number_input("Sonstiges", value=300, step=None)
 
-        if loan_amount > 0:
-            total_monthly_burden = actual_monthly_payment + monthly_nebenkosten_new
+        monthly_nebenkosten_privat = priv_nahrung + priv_versicherungen + priv_sonstiges
+        st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Monatliche Nebenkosten (Privat): <b>€{format_eur(monthly_nebenkosten_privat)}</b></div>', unsafe_allow_html=True)
 
-            inner_col1, inner_col2 = st.columns(2)
-            with inner_col1:
-                st.metric("Erforderliche monatliche Rate (Kredit)", f"€{format_eur(actual_monthly_payment)}")
-            with inner_col2:
-                st.metric("Monatliche Nebenkosten", f"€{format_eur(monthly_nebenkosten_new)}")
 
-            st.markdown(f'<div class="calculated-result" style="margin-top:15px; font-size: 1.5rem;">Gesamte monatliche Belastung: <b>€{format_eur(total_monthly_burden)}</b></div>', unsafe_allow_html=True)
+# --- ROW 5: Finanzielle Analyse (Merged Full Width) ---
+with st.container(border=True):
+    st.header("3. Finanzielle Analyse")
 
-with row4_col2:
-    with st.container(border=True):
-        st.header("4. Cashflow")
-        st.write("Vergleich der Kosten für das neue Haus mit Ihrem Einkommen und den Einnahmen aus dem alten Haus.")
+    if loan_amount > 0:
+        total_monthly_burden = actual_monthly_payment + monthly_nebenkosten_new + monthly_nebenkosten_privat
 
-        total_monthly_burden = actual_monthly_payment + monthly_nebenkosten_new
+        st.subheader("Ausgaben (Monatlich)")
+
+        ausg1, ausg2, ausg3 = st.columns(3)
+        with ausg1:
+            st.metric("Erforderliche Rate (Kredit)", f"€{format_eur(actual_monthly_payment)}")
+        with ausg2:
+            st.metric("Nebenkosten (Haus)", f"€{format_eur(monthly_nebenkosten_new)}")
+        with ausg3:
+            st.metric("Nebenkosten (Privat)", f"€{format_eur(monthly_nebenkosten_privat)}")
+
+        st.markdown(f'<div class="calculated-result" style="margin-top:15px; font-size: 1.5rem;">Gesamte monatliche Belastung: <b>€{format_eur(total_monthly_burden)}</b></div>', unsafe_allow_html=True)
+
+        st.markdown("---")
+
+        st.subheader("Cashflow Szenarien")
+        st.write("Vergleich der Ausgaben mit Ihrem Einkommen und den Einnahmen aus dem alten Haus.")
 
         cf_col1, cf_col2 = st.columns(2)
 
@@ -246,6 +271,7 @@ with row4_col2:
             st.write("Die Nebenkosten des alten Hauses werden vom Mieter getragen.")
 
             net_monthly_cash_flow_a = total_monthly_income + monthly_rent - total_monthly_burden
+            net_yearly_cash_flow_a = net_monthly_cash_flow_a * 12
 
             box_class_a = "cashflow-positive" if net_monthly_cash_flow_a >= 0 else "cashflow-negative"
             st.markdown(f"""
@@ -254,12 +280,14 @@ with row4_col2:
                 <div class="cashflow-value">€{format_eur(net_monthly_cash_flow_a)}</div>
             </div>
             """, unsafe_allow_html=True)
+            st.write(f"**Jährlicher Netto Cashflow:** €{format_eur(net_yearly_cash_flow_a)}")
 
         with cf_col2:
             st.subheader("Szenario B (Leerstand)")
             st.write("Sie tragen Hypothek **und** Nebenkosten beider Häuser.")
 
             net_monthly_cash_flow_b = total_monthly_income - total_monthly_burden - monthly_nebenkosten_old
+            net_yearly_cash_flow_b = net_monthly_cash_flow_b * 12
 
             box_class_b = "cashflow-positive" if net_monthly_cash_flow_b >= 0 else "cashflow-negative"
             st.markdown(f"""
@@ -268,6 +296,8 @@ with row4_col2:
                 <div class="cashflow-value">€{format_eur(net_monthly_cash_flow_b)}</div>
             </div>
             """, unsafe_allow_html=True)
+            st.write(f"**Jährlicher Netto Cashflow:** €{format_eur(net_yearly_cash_flow_b)}")
+
 
 # Add spacing at the bottom of the page
 st.write("")
