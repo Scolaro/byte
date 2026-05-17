@@ -121,7 +121,7 @@ with row1_col2:
 
         r4a_1, r4a_2 = st.columns(2)
         with r4a_1:
-            afa_old_house = st.number_input("Jährliche Gebäudeabschreibung (AfA) in €", value=3750, step=None, help="Mindert die Steuerlast, aber nicht den Cashflow.")
+            afa_old_house = st.number_input("Jährliche Gebäudeabschreibung (AfA) in € 📌", value=3699.13, step=None, help="Mindert die Steuerlast, aber nicht den Cashflow.")
         with r4a_2:
             mietausfallwagnis_percent = st.number_input("Mietausfallwagnis (%)", value=2.5, step=None, help="Simuliert Leerstand und Mieterwechsel.")
 
@@ -174,7 +174,7 @@ with row2_col1:
         with nk1c3:
             nk_muell_new = st.number_input("Müll/Straßenreinigung", value=200, step=None, key="nk_muell_new")
         with nk1c4:
-            nk_wasser_new = st.number_input("Abwasser/Regen", value=200, step=None, key="nk_wasser_new")
+            nk_wasser_new = st.number_input("Wasser/Kanal/Niederschlag", value=525, step=None, key="nk_wasser_new", help="Wasser, Kanalgebühren & Niederschlagswasser")
 
         nk2c1, nk2c2, nk2c3, nk2c4 = st.columns(4)
         with nk2c1:
@@ -233,7 +233,7 @@ with row2_col2:
 
         nko2c1, nko2c2, nko2c3, nko2c4 = st.columns(4)
         with nko2c1:
-            nk_wasser_old = st.number_input("Abwasser/Regen 📌", value=200, step=None, key="nk_wasser_old", help="Dieser Wert ist typischerweise vorgegeben, kann aber von Ihnen angepasst werden.")
+            nk_wasser_old = st.number_input("Wasser/Kanal/Niederschlag 📌", value=525, step=None, key="nk_wasser_old", help="Wasser, Kanalgebühren & Niederschlagswasser. Dieser Wert ist typischerweise vorgegeben, kann aber von Ihnen angepasst werden.")
         with nko2c2:
             nk_schornstein_old = st.number_input("Schornsteinfeger/Heizung 📌", value=300, step=None, key="nk_schorn_old", help="Dieser Wert ist typischerweise vorgegeben, kann aber von Ihnen angepasst werden.")
         with nko2c3:
