@@ -199,6 +199,24 @@ with row2_col1:
         with nk3c4:
             pass
 
+    with st.container(border=True):
+        st.header("Hypotheken-Details")
+        h4c1, h4c2 = st.columns(2)
+        with h4c1:
+            interest_rate = st.number_input("Zinssatz der Hypothek (%)", value=3.5, step=None)
+        with h4c2:
+            tilgungssatz = st.number_input("Anfängliche Tilgung (%)", value=2.0, step=None)
+
+        if loan_amount <= 0:
+            actual_monthly_payment = 0.0
+            st.success("Ihr Eigenkapital deckt alle Kosten! Keine Hypothek erforderlich.")
+        else:
+            # Annuitätendarlehen formula: (Kreditbetrag * (Zinssatz + Tilgungssatz)) / 12
+            actual_monthly_payment = (loan_amount * ((interest_rate + tilgungssatz) / 100)) / 12
+
+        st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Erforderliche monatliche Rate (Kredit): <b>€{format_eur(actual_monthly_payment)}</b></div>', unsafe_allow_html=True)
+
+
 with row2_col2:
     with st.container(border=True):
         st.header("Laufende Nebenkosten (Jahr)")
@@ -253,7 +271,8 @@ with row2_col2:
             with r4_res1:
                 st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Jährliche Mieteinnahmen (Kaltmiete): <b>€{format_eur(yearly_rent)}</b></div>', unsafe_allow_html=True)
             with r4_res2:
-                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Netto-Mietüberschuss (mtl., nach Steuerabzug) <span title="Miete - Mietausfallwagnis - Steuern">ℹ️</span>: <b>€{format_eur(net_rental_surplus)}</b></div>', unsafe_allow_html=True)
+                help_icon_svg = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor" xmlns="http://www.w3.org/2000/svg" color="inherit" style="width: 1rem; height: 1rem; margin-left: 4px; vertical-align: middle; color: rgba(49, 51, 63, 0.6);"><path fill="none" d="M0 0h24v24H0V0z"></path><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"></path></svg>'
+                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Netto-Mietüberschuss (mtl., nach Steuerabzug) <span title="Miete - Mietausfallwagnis - Steuern" style="cursor: help;">{help_icon_svg}</span>: <b>€{format_eur(net_rental_surplus)}</b></div>', unsafe_allow_html=True)
             with r4_res3:
                 pass
 
@@ -278,23 +297,6 @@ with row2_col2:
 row3_col1, row3_col2 = st.columns(2)
 
 with row3_col1:
-    with st.container(border=True):
-        st.header("Hypotheken-Details")
-        h4c1, h4c2 = st.columns(2)
-        with h4c1:
-            interest_rate = st.number_input("Zinssatz der Hypothek (%)", value=3.5, step=None)
-        with h4c2:
-            tilgungssatz = st.number_input("Anfängliche Tilgung (%)", value=2.0, step=None)
-
-        if loan_amount <= 0:
-            actual_monthly_payment = 0.0
-            st.success("Ihr Eigenkapital deckt alle Kosten! Keine Hypothek erforderlich.")
-        else:
-            # Annuitätendarlehen formula: (Kreditbetrag * (Zinssatz + Tilgungssatz)) / 12
-            actual_monthly_payment = (loan_amount * ((interest_rate + tilgungssatz) / 100)) / 12
-
-        st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Erforderliche monatliche Rate (Kredit): <b>€{format_eur(actual_monthly_payment)}</b></div>', unsafe_allow_html=True)
-
     with st.container(border=True):
         st.header("Laufende Kosten (Privat, mtl.)")
         pr1c1, pr1c2, pr1c3 = st.columns(3)
@@ -328,7 +330,7 @@ with row3_col1:
 
 with row3_col2:
     with st.container(border=True):
-        st.header("Finanzielle Analyse 📊")
+        st.header("Finanzielle Analyse 💰")
 
         total_monthly_burden = actual_monthly_payment + monthly_nebenkosten_new + monthly_nebenkosten_privat
 
