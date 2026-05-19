@@ -101,6 +101,9 @@ st.write("Ermitteln Sie die finanzielle Machbarkeit des Kaufs eines neuen Hauses
 
 def format_eur(amount):
     """Format numbers into German EUR style, e.g., 1.000,00"""
+    import math
+    if math.isinf(amount):
+        return "∞"
     formatted = f"{amount:,.2f}"
     return formatted.replace(",", "X").replace(".", ",").replace("X", ".")
 
@@ -117,7 +120,7 @@ with row1_col2:
         with r4c2:
             renovations_old = st.number_input("Reparaturen vor Vermietung", value=20000, step=None)
         with r4c3:
-            tax_rate_rent = st.number_input("Pausch. Steuersatz Mieterträge (%)", value=25.0, step=None, help="Puffer für die Einkommensteuer auf den Netto-Mietüberschuss.")
+            tax_rate_rent = st.number_input("Pausch. Steuersatz Mieterträge (%)", value=25.0, step=None, help="Puffer für die Einkommensteuer auf den Netto-Mietüberschuss. In der Realität greift hier Ihr persönlicher Grenzsteuersatz.")
 
         r4a_1, r4a_2 = st.columns(2)
         with r4a_1:
@@ -226,11 +229,15 @@ with row2_col1:
                 import math
                 restschuld = loan_amount * (q ** months) - (actual_monthly_payment * ((q ** months - 1) / monthly_interest))
                 restschuld = max(0, restschuld)
-                total_months = math.log(actual_monthly_payment / (actual_monthly_payment - loan_amount * monthly_interest)) / math.log(q)
-                total_years = total_months / 12
+                # Calculate total years, avoiding log domain errors if payment does not cover interest
+                if actual_monthly_payment > loan_amount * monthly_interest:
+                    total_months = math.log(actual_monthly_payment / (actual_monthly_payment - loan_amount * monthly_interest)) / math.log(q)
+                    total_years = total_months / 12
+                else:
+                    total_years = float('inf')
             else:
                 restschuld = max(0, loan_amount - (actual_monthly_payment * months))
-                total_years = loan_amount / (actual_monthly_payment * 12) if actual_monthly_payment > 0 else 0
+                total_years = loan_amount / (actual_monthly_payment * 12) if actual_monthly_payment > 0 else float('inf')
 
             hc_res1, hc_res2, hc_res3 = st.columns(3)
             with hc_res1:
