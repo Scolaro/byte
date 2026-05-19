@@ -30,7 +30,7 @@ Hier wird der finanzielle Grundstein für Ihr neues Eigenheim gelegt:
 ### 2. Das Alte Haus (Vermietung)
 Hier erfassen Sie die wirtschaftlichen Eckdaten Ihrer bestehenden Immobilie:
 - **Mieteinnahmen & Mietausfallwagnis:** Die monatliche Kaltmiete wird um das von Ihnen angegebene Mietausfallwagnis reduziert. Dies simuliert realistische Einnahmeverluste durch Leerstand oder Mieterwechsel.
-- **Reparaturen vor Vermietung:** Diese Kosten werden direkt auf den neuen Kreditbetrag aufgeschlagen, da sie in der Regel zeitnah zum Auszug anfallen.
+- **Reparaturen vor Vermietung:** Diese Kosten werden direkt auf den neuen Kreditbetrag aufgeschlagen, da sie in der Regel zeitnah zum Auszug anfallen. *(Tipp: Diese Renovierungskosten können in der Realität oft als sofort abziehbarer Erhaltungsaufwand von der Steuer abgesetzt werden und so in den ersten Jahren zu hohen Steuerrückerstattungen führen).*
 - **Gebäudeabschreibung (AfA) & Steuern:** Mieteinnahmen sind steuerpflichtig. Die Steuerlast berechnet sich aus der realen Miete (Miete abzgl. Ausfallwagnis) abzüglich der Gebäudeabschreibung (AfA). Da die AfA eine reine Steuervergünstigung ist, verlässt das Geld nicht Ihr Konto.
 - **Netto-Mietüberschuss:** Das ist der tatsächliche Betrag, der auf Ihrem Konto landet: Die reale Miete abzüglich der berechneten Steuern. Er fließt positiv in Ihren Cashflow ein.
 

@@ -204,46 +204,68 @@ with row2_col1:
 
     with st.container(border=True):
         st.header("Hypotheken-Details")
-        h4c1, h4c2, h4c3 = st.columns(3)
+        h4c1, h4c2, h4c3, h4c4 = st.columns(4)
         with h4c1:
-            interest_rate = st.number_input("Zinssatz der Hypothek (%)", value=3.5, step=None)
+            interest_rate = st.number_input("Zinssatz (%)", value=3.5, step=None)
         with h4c2:
-            tilgungssatz = st.number_input("Anfängliche Tilgung (%)", value=2.0, step=None)
+            tilgungssatz = st.number_input("Anfängl. Tilgung (%)", value=2.0, step=None)
         with h4c3:
             zinsbindung = st.number_input("Zinsbindung (Jahre)", value=15, step=None)
+        with h4c4:
+            sondertilgung = st.number_input("Jährl. Sondertilgung (€)", value=0, step=None)
 
         if loan_amount <= 0:
             actual_monthly_payment = 0.0
             st.success("Ihr Eigenkapital deckt alle Kosten! Keine Hypothek erforderlich.")
         else:
-            # Annuitätendarlehen formula: (Kreditbetrag * (Zinssatz + Tilgungssatz)) / 12
             r = interest_rate / 100
             t = tilgungssatz / 100
             monthly_interest = r / 12
             actual_monthly_payment = (loan_amount * (r + t)) / 12
 
-            months = zinsbindung * 12
-            q = 1 + monthly_interest
+            current_balance = loan_amount
+            months_passed = 0
+            balance_at_fixed_end = loan_amount
+            max_months = 1200 # 100 years max loop to prevent infinite hangs
 
-            if monthly_interest > 0:
-                import math
-                restschuld = loan_amount * (q ** months) - (actual_monthly_payment * ((q ** months - 1) / monthly_interest))
-                restschuld = max(0, restschuld)
-                # Calculate total years, avoiding log domain errors if payment does not cover interest
-                if actual_monthly_payment > loan_amount * monthly_interest:
-                    total_months = math.log(actual_monthly_payment / (actual_monthly_payment - loan_amount * monthly_interest)) / math.log(q)
-                    total_years = total_months / 12
-                else:
-                    total_years = float('inf')
-            else:
-                restschuld = max(0, loan_amount - (actual_monthly_payment * months))
-                total_years = loan_amount / (actual_monthly_payment * 12) if actual_monthly_payment > 0 else float('inf')
+            while current_balance > 0 and months_passed < max_months:
+                interest_payment = current_balance * monthly_interest
+
+                # If payment covers the rest, pay it off
+                if current_balance + interest_payment <= actual_monthly_payment:
+                    current_balance = 0
+                    months_passed += 1
+                    if months_passed == int(zinsbindung * 12):
+                        balance_at_fixed_end = current_balance
+                    break
+
+                principal_payment = actual_monthly_payment - interest_payment
+
+                if principal_payment <= 0 and sondertilgung <= 0:
+                    months_passed = float('inf')
+                    break
+
+                current_balance -= principal_payment
+                months_passed += 1
+
+                if months_passed % 12 == 0:
+                    current_balance -= sondertilgung
+
+                current_balance = max(0, current_balance)
+
+                if months_passed == int(zinsbindung * 12):
+                    balance_at_fixed_end = current_balance
+
+            if months_passed < int(zinsbindung * 12):
+                balance_at_fixed_end = 0
+
+            total_years = months_passed / 12 if months_passed != float('inf') else float('inf')
 
             hc_res1, hc_res2, hc_res3 = st.columns(3)
             with hc_res1:
                 st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Erforderliche monatliche Rate: <b>€{format_eur(actual_monthly_payment)}</b></div>', unsafe_allow_html=True)
             with hc_res2:
-                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Restschuld nach {int(zinsbindung)} Jahren: <b>€{format_eur(restschuld)}</b></div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Restschuld nach {int(zinsbindung)} Jahren: <b>€{format_eur(balance_at_fixed_end)}</b></div>', unsafe_allow_html=True)
             with hc_res3:
                 st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Geschätzte Gesamtlaufzeit: <b>{format_eur(total_years)} Jahre</b></div>', unsafe_allow_html=True)
 
@@ -330,26 +352,30 @@ row3_col1, row3_col2 = st.columns(2)
 with row3_col1:
     with st.container(border=True):
         st.header("Laufende Kosten (Privat, mtl.)")
-        pr1c1, pr1c2, pr1c3, pr1c4 = st.columns(4)
+        pr1c1, pr1c2, pr1c3 = st.columns(3)
         with pr1c1:
             priv_nahrung = st.number_input("Nahrungsmittel", value=400, step=None)
         with pr1c2:
-            priv_versicherungen = st.number_input("Versicherungen", value=150, step=None)
+            priv_mobilitaet = st.number_input("Mobilität (Auto, ÖPNV)", value=300, step=None)
         with pr1c3:
-            priv_kommunikation = st.number_input("Kommunikation (Internet, Handy)", value=60, step=None)
-        with pr1c4:
-            priv_sonstiges = st.number_input("Sonstiges", value=100, step=None)
+            priv_versicherungen = st.number_input("Versicherungen", value=150, step=None)
 
-        monthly_nebenkosten_privat = priv_nahrung + priv_versicherungen + priv_kommunikation + priv_sonstiges
-
-        pr2c1, pr2c2, pr2c3, pr2c4 = st.columns(4)
+        pr2c1, pr2c2, pr2c3 = st.columns(3)
         with pr2c1:
-            st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Jährliche Privatkosten: <b>€{format_eur(monthly_nebenkosten_privat * 12)}</b></div>', unsafe_allow_html=True)
+            priv_kommunikation = st.number_input("Kommunikation", value=60, step=None, help="Internet, Handy, etc.")
         with pr2c2:
-            st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Monatliche Privatkosten: <b>€{format_eur(monthly_nebenkosten_privat)}</b></div>', unsafe_allow_html=True)
+            priv_sonstiges = st.number_input("Sonstiges", value=100, step=None)
         with pr2c3:
             pass
-        with pr2c4:
+
+        monthly_nebenkosten_privat = priv_nahrung + priv_mobilitaet + priv_versicherungen + priv_kommunikation + priv_sonstiges
+
+        pr3c1, pr3c2, pr3c3 = st.columns(3)
+        with pr3c1:
+            st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Jährliche Privatkosten: <b>€{format_eur(monthly_nebenkosten_privat * 12)}</b></div>', unsafe_allow_html=True)
+        with pr3c2:
+            st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Monatliche Privatkosten: <b>€{format_eur(monthly_nebenkosten_privat)}</b></div>', unsafe_allow_html=True)
+        with pr3c3:
             pass
 
     with st.container(border=True):
