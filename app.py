@@ -108,6 +108,57 @@ def format_eur(amount):
     return formatted.replace(",", "X").replace(".", ",").replace("X", ".")
 
 
+def berechne_netto(brutto_jahr, kv_satz):
+    """
+    Approximation of the monthly net salary for 2024 (Hesse, Tax Class 1, no church tax).
+    """
+    if brutto_jahr <= 0:
+        return 0.0
+
+    bbg_kv = 62100.0
+    bbg_rv = 90600.0
+
+    kv_anteil = kv_satz / 2.0 / 100.0
+    pv_anteil = 0.023 # Steuerklasse 1 oft kinderlos = 2.3%
+    rv_anteil = 0.093
+    av_anteil = 0.013
+
+    basis_kv = min(brutto_jahr, bbg_kv)
+    basis_rv = min(brutto_jahr, bbg_rv)
+
+    soz_kv_pv = basis_kv * (kv_anteil + pv_anteil)
+    soz_rv_av = basis_rv * (rv_anteil + av_anteil)
+    sozialabgaben = soz_kv_pv + soz_rv_av
+
+    # Vorsorgeaufwendungen absetzen (stark vereinfacht)
+    vorsorge = min(sozialabgaben, 1900 + soz_rv_av)
+    zve = brutto_jahr - 1230.0 - vorsorge
+    if zve < 0: zve = 0
+
+    # ESt-Tarif 2024
+    if zve <= 11784:
+        est = 0.0
+    elif zve <= 17005:
+        y = (zve - 11784) / 10000.0
+        est = (992.14 * y + 1400.0) * y
+    elif zve <= 62809:
+        z = (zve - 17005) / 10000.0
+        est = (208.85 * z + 2397.0) * z + 966.53
+    elif zve <= 277825:
+        est = 0.42 * zve - 10453.18
+    else:
+        est = 0.45 * zve - 18787.93
+
+    est = max(0, est)
+    # Soli
+    soli = 0.0
+    if est > 18130:
+        soli = est * 0.055
+
+    netto_jahr = brutto_jahr - sozialabgaben - est - soli
+    return netto_jahr / 12.0
+
+
 row1_col1, row1_col2 = st.columns(2)
 
 with row1_col2:
@@ -118,7 +169,7 @@ with row1_col2:
         with r4c1:
             monthly_rent = st.number_input("Monatliche Mieteinnahmen", value=1400, step=None)
         with r4c2:
-            renovations_old = st.number_input("Reparaturen vor Vermietung", value=20000, step=None)
+            renovations_old = st.number_input("Reparaturen vor Vermietung", value=10000, step=None)
         with r4c3:
             tax_rate_rent = st.number_input("Pausch. Steuersatz Mieterträge (%)", value=25.0, step=None, help="Puffer für die Einkommensteuer auf den Netto-Mietüberschuss. In der Realität greift hier Ihr persönlicher Grenzsteuersatz.")
 
@@ -142,13 +193,13 @@ with row1_col1:
         with r1c2:
             closing_costs_percent = st.number_input("Kaufnebenkosten (%)", value=8.0, step=None, help="In Hessen beträgt die Grunderwerbsteuer 6%. Notar und Grundbuchamt machen ca. 2% aus.")
         with r1c3:
-            renovations_new = st.number_input("Reparaturen vor Einzug", value=25000, step=None)
+            renovations_new = st.number_input("Reparaturen vor Einzug", value=10000, step=None)
 
         r1a1, r1a2, r1a3 = st.columns(3)
         with r1a1:
             down_payment = st.number_input("Eigenkapital (€)", value=160000, step=None, help="Bargeld, das Sie für den Kauf, die Nebenkosten und Renovierungen einsetzen.")
         with r1a2:
-            wohnflaeche_new = st.number_input("Wohnfläche (m²)", value=150, step=None)
+            wohnflaeche_new = st.number_input("Wohnfläche (m²)", value=180, step=None)
         with r1a3:
             pass
 
@@ -337,11 +388,18 @@ with row2_col2:
 
     with st.container(border=True):
         st.header("Einkommen")
-        r5c1, r5c2 = st.columns(2)
+        st.write("Berechnung des Netto-Gehalts für Steuerklasse 1 in Hessen ohne Kirchensteuer.")
+        r5c1, r5c2, r5c3 = st.columns(3)
         with r5c1:
-            job_salary_net = st.number_input("Monatliches Netto-Gehalt (€) 📌", value=2600, step=None)
+            brutto_jahr = st.number_input("Jährliches Bruttogehalt (€)", value=55000, step=None)
         with r5c2:
-            other_income = st.number_input("Andere Einkommensquellen (€)", value=0, step=None)
+            kv_satz = st.number_input("Gesetzlicher Krankenkassenbeitrag (%)", value=16.8, step=None, format="%.1f")
+        with r5c3:
+            other_income = st.number_input("Andere Einkommensquellen (Netto/Monat €)", value=0, step=None)
+
+        job_salary_net = berechne_netto(brutto_jahr, kv_satz)
+
+        st.markdown(f"**Berechnetes monatliches Netto-Gehalt:** €{format_eur(job_salary_net)}")
 
         total_monthly_income = job_salary_net + other_income
 
@@ -385,16 +443,6 @@ with row3_col1:
             pass
 
     with st.container(border=True):
-        st.header("Private Sparraten / Rücklagen (mtl.)")
-        sr1, sr2 = st.columns(2)
-        with sr1:
-            inst_new_house = st.number_input("Instandhaltungsrücklage Neues Haus", value=50, step=None, help="Sollte ca. 1-2 € pro m² pro Monat betragen")
-        with sr2:
-            inst_old_house = st.number_input("Instandhaltungsrücklage Altes Haus", value=50, step=None, help="Sollte ca. 1-2 € pro m² pro Monat betragen")
-
-        total_monthly_savings = inst_new_house + inst_old_house
-
-    with st.container(border=True):
         st.header("Bank-Risikoprüfung 🏦")
 
         # 1. Beleihungsauslauf (LTV)
@@ -424,6 +472,7 @@ with row3_col1:
             st.markdown(f"**Bewirtschaftungspauschale** <span title='Das ist der Puffer, den die Bank in ihrer Haushaltsrechnung für Heizung, Instandhaltung und Müll abzieht. Sie rechnet meist mit 2,50 € pro Quadratmeter im Monat.' style='cursor: help;'>{help_svg}</span><br>€{format_eur(bewirtschaftung_pauschale)}", unsafe_allow_html=True)
             st.markdown(f"**1. Monat Zins / Tilgung** <span title='Damit wir direkt sehen, wie viel von unserer hohen Rate im ersten Monat in den eigenen Vermögensaufbau (Tilgung) und wie viel an die Bank (Zins) fließt.' style='cursor: help;'>{help_svg}</span><br>€{format_eur(zins_anteil_1m)} / €{format_eur(tilgung_anteil_1m)}", unsafe_allow_html=True)
 
+    st.markdown("<div style='margin-bottom: 30px;'></div>", unsafe_allow_html=True)
 
 with row3_col2:
     with st.container(border=True):
@@ -451,8 +500,8 @@ with row3_col2:
         with cf_col1:
             st.subheader("Szenario A (Vermietet)")
 
-            # Scenario A: deduct both savings rates
-            net_monthly_cash_flow_a = total_monthly_income + net_rental_surplus - total_monthly_burden - total_monthly_savings
+            # Scenario A
+            net_monthly_cash_flow_a = total_monthly_income + net_rental_surplus - total_monthly_burden
             net_yearly_cash_flow_a = net_monthly_cash_flow_a * 12
 
             box_class_a = "cashflow-positive" if net_monthly_cash_flow_a >= 0 else "cashflow-negative"
@@ -467,8 +516,8 @@ with row3_col2:
         with cf_col2:
             st.subheader("Szenario B (Leerstand)")
 
-            # Scenario B: empty house means no rent, owner pays old house Nebenkosten, and still saves
-            net_monthly_cash_flow_b = total_monthly_income - total_monthly_burden - monthly_nebenkosten_old - total_monthly_savings
+            # Scenario B: empty house means no rent, owner pays old house Nebenkosten
+            net_monthly_cash_flow_b = total_monthly_income - total_monthly_burden - monthly_nebenkosten_old
             net_yearly_cash_flow_b = net_monthly_cash_flow_b * 12
 
             box_class_b = "cashflow-positive" if net_monthly_cash_flow_b >= 0 else "cashflow-negative"

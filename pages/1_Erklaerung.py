@@ -38,13 +38,12 @@ Hier erfassen Sie die wirtschaftlichen Eckdaten Ihrer bestehenden Immobilie:
 Für beide Häuser erfassen Sie hier die jährlichen Betriebskosten.
 - **Neues Haus:** Diese Kosten tragen Sie in voller Höhe selbst. (Hinweis: Als Selbstnutzer benötigen Sie hier keine spezielle Grundbesitzerhaftpflicht, da dies meist über die private Haftpflicht abgedeckt ist).
 - **Altes Haus:** Bei Vermietung (Szenario A) werden die hier angegebenen umlagefähigen Kosten über die Nebenkostenabrechnung vom Mieter getragen und beeinflussen Ihren Cashflow nicht negativ. Steht das Haus jedoch leer (Szenario B), fallen *alle* Kosten (inklusive der Haus- und Grundbesitzerhaftpflicht) auf Sie zurück.
-*Hinweis: Instandhaltungsrücklagen zählen zu den privaten Sparraten und werden getrennt berechnet.*
 
-### 4. Einkommen, Privatkosten & Rücklagen
+### 4. Einkommen & Privatkosten
 Damit der Cashflow realistisch ist, betrachten wir Ihr verfügbares Budget:
-- Ihr **monatliches Netto-Gehalt** und **weitere Einkommensquellen** bilden die Basis.
+- **Netto-Gehalt:** Das monatliche Netto-Gehalt wird basierend auf Ihrem jährlichen Bruttogehalt und dem gesetzlichen Krankenkassenbeitrag automatisch geschätzt (Annahme: Bundesland Hessen, Steuerklasse 1, keine Kirchensteuer).
+- Dieses Netto-Gehalt sowie **weitere Einkommensquellen** bilden die Einnahmenseite.
 - Davon abgezogen werden die **Laufenden Kosten (Privat)** wie Nahrungsmittel, Versicherungen und Sonstiges.
-- Ebenfalls abgezogen werden die **Privaten Sparraten / Rücklagen** (wie z. B. die Instandhaltungsrücklagen für beide Häuser). Das garantiert, dass das Sparen für künftige Reparaturen aus Ihrem Netto-Einkommen bestritten wird.
 
 ### 5. Finanzielle Analyse (Szenarien)
 Die abschließende Analyse führt alle Ausgaben und Einnahmen zusammen, um Ihren finalen Netto-Cashflow zu ermitteln.
@@ -52,10 +51,10 @@ Die abschließende Analyse führt alle Ausgaben und Einnahmen zusammen, um Ihren
 Die **Gesamte monatliche Belastung** setzt sich zusammen aus der Kreditrate für das neue Haus, den Nebenkosten des neuen Hauses und Ihren privaten Lebenshaltungskosten.
 
 * **Szenario A (Vermietet):**
-  Ihr Einkommen wird um den *Netto-Mietüberschuss (nach Steuern)* ergänzt. Davon ziehen wir die gesamte monatliche Belastung sowie Ihre privaten Sparraten (Instandhaltung) ab.
+  Ihr Einkommen wird um den *Netto-Mietüberschuss (nach Steuern)* ergänzt. Davon ziehen wir die gesamte monatliche Belastung ab.
 
 * **Szenario B (Leerstand):**
-  Das alte Haus bringt keine Mieteinnahmen. Ihr Einkommen muss nun die gesamte monatliche Belastung, Ihre privaten Sparraten **sowie zusätzlich** die vollen monatlichen Nebenkosten des leerstehenden alten Hauses tragen.
+  Das alte Haus bringt keine Mieteinnahmen. Ihr Einkommen muss nun die gesamte monatliche Belastung **sowie zusätzlich** die vollen monatlichen Nebenkosten des leerstehenden alten Hauses tragen.
 
 Sollte der Cashflow-Wert rot sein, übersteigen Ihre monatlichen Ausgaben Ihre Einnahmen.
 
