@@ -136,15 +136,21 @@ with row1_col1:
     with st.container(border=True):
         st.header("1. Das Neue Haus (Kauf)")
 
-        r1c1, r1c2, r1c3, r1c4 = st.columns(4)
+        r1c1, r1c2, r1c3 = st.columns(3)
         with r1c1:
             purchase_price = st.number_input("Kaufpreis (€)", value=600000, step=None)
         with r1c2:
             closing_costs_percent = st.number_input("Kaufnebenkosten (%)", value=8.0, step=None, help="In Hessen beträgt die Grunderwerbsteuer 6%. Notar und Grundbuchamt machen ca. 2% aus.")
         with r1c3:
             renovations_new = st.number_input("Reparaturen vor Einzug", value=25000, step=None)
-        with r1c4:
+
+        r1a1, r1a2, r1a3 = st.columns(3)
+        with r1a1:
             down_payment = st.number_input("Eigenkapital (€)", value=160000, step=None, help="Bargeld, das Sie für den Kauf, die Nebenkosten und Renovierungen einsetzen.")
+        with r1a2:
+            wohnflaeche_new = st.number_input("Wohnfläche (m²)", value=150, step=None)
+        with r1a3:
+            pass
 
         closing_costs_eur = purchase_price * (closing_costs_percent / 100)
         total_capital_needed = purchase_price + closing_costs_eur + renovations_new + renovations_old
@@ -443,3 +449,39 @@ with row3_col2:
             </div>
             """, unsafe_allow_html=True)
             st.write(f"**Jährlicher Netto Cashflow:** €{format_eur(net_yearly_cash_flow_b)}")
+
+# --- ROW 4: Bank-Risikoprüfung ---
+st.markdown("---")
+row4_col1, row4_col2 = st.columns(2)
+
+with row4_col1:
+    with st.container(border=True):
+        st.header("Bank-Risikoprüfung 🏦")
+
+        # 1. Beleihungsauslauf (LTV)
+        ltv = loan_amount / purchase_price if purchase_price > 0 else 0
+        ltv_pct = ltv * 100
+        ltv_color = "green" if ltv_pct < 60 else "orange" if ltv_pct <= 80 else "red"
+
+        # 2. Wohnkostenquote (Kapitaldienstgrenze)
+        wkq = actual_monthly_payment / total_monthly_income if total_monthly_income > 0 else 0
+        wkq_pct = wkq * 100
+        wkq_color = "green" if wkq_pct <= 30 else "orange" if wkq_pct <= 40 else "red"
+
+        # 3. Bewirtschaftungspauschale
+        bewirtschaftung_pauschale = wohnflaeche_new * 2.5
+
+        # 4. Zins- und Tilgungsanteil (für den 1. Monat)
+        zins_anteil_1m = loan_amount * (interest_rate / 100 / 12)
+        tilgung_anteil_1m = actual_monthly_payment - zins_anteil_1m
+
+        b1, b2 = st.columns(2)
+        with b1:
+            st.markdown(f"**Beleihungsauslauf (LTV):** <span style='color:{ltv_color}; font-weight:bold;'>{format_eur(ltv_pct)} %</span>", unsafe_allow_html=True)
+            st.markdown(f"**Wohnkostenquote:** <span style='color:{wkq_color}; font-weight:bold;'>{format_eur(wkq_pct)} %</span>", unsafe_allow_html=True)
+        with b2:
+            st.markdown(f"**Bewirtschaftungspauschale:** €{format_eur(bewirtschaftung_pauschale)}", unsafe_allow_html=True)
+            st.markdown(f"**1. Monat Zins / Tilgung:** €{format_eur(zins_anteil_1m)} / €{format_eur(tilgung_anteil_1m)}", unsafe_allow_html=True)
+
+with row4_col2:
+    pass

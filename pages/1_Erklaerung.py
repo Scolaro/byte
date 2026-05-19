@@ -58,4 +58,11 @@ Die **Gesamte monatliche Belastung** setzt sich zusammen aus der Kreditrate für
   Das alte Haus bringt keine Mieteinnahmen. Ihr Einkommen muss nun die gesamte monatliche Belastung, Ihre privaten Sparraten **sowie zusätzlich** die vollen monatlichen Nebenkosten des leerstehenden alten Hauses tragen.
 
 Sollte der Cashflow-Wert rot sein, übersteigen Ihre monatlichen Ausgaben Ihre Einnahmen.
+
+### 6. Bank-Risikoprüfung
+Hier sehen Sie die wichtigsten Kennzahlen, die Banken intern zur Kreditvergabe nutzen:
+- **Beleihungsauslauf (LTV):** Prozentualer Anteil des Kaufpreises, der finanziert wird. (< 60% = Bestzinsen, > 80% = Risiko).
+- **Wohnkostenquote:** Zeigt, wie viel Prozent Ihres Nettoeinkommens für die monatliche Kreditrate aufgewendet werden muss. (Sollte unter 30-40% liegen).
+- **Bewirtschaftungspauschale:** Pauschaler Abzug der Bank für Nebenkosten (oft 2,50 € pro m²).
+- **Zins- und Tilgungsanteil (1. Monat):** Zeigt auf einen Blick, wie viel Ihrer ersten Rate in Ihren Vermögensaufbau (Tilgung) und wie viel an die Bank (Zinsen) fließt.
 """)
