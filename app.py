@@ -282,21 +282,21 @@ with row2_col2:
 
         nko1c1, nko1c2, nko1c3, nko1c4 = st.columns(4)
         with nko1c1:
-            nk_haftpflicht_old = st.number_input("Haftpflicht 📌", value=100, step=None, key="nk_haft_old", help="Dieser Wert ist typischerweise vorgegeben, kann aber von Ihnen angepasst werden.")
+            nk_haftpflicht_old = st.number_input("Haftpflicht 📌", value=100, step=None, key="nk_haft_old")
         with nko1c2:
-            nk_versicherung_old = st.number_input("Wohngebäudevers. 📌", value=1100, step=None, key="nk_vers_old", help="Dieser Wert ist typischerweise vorgegeben, kann aber von Ihnen angepasst werden.")
+            nk_versicherung_old = st.number_input("Wohngebäudevers. 📌", value=1100, step=None, key="nk_vers_old")
         with nko1c3:
-            nk_grundsteuer_old = st.number_input("Grundsteuer 📌", value=430, step=None, key="nk_gs_old", help="Dieser Wert ist typischerweise vorgegeben, kann aber von Ihnen angepasst werden.")
+            nk_grundsteuer_old = st.number_input("Grundsteuer 📌", value=430, step=None, key="nk_gs_old")
         with nko1c4:
-            nk_muell_old = st.number_input("Müll/Straßenreinigung 📌", value=200, step=None, key="nk_muell_old", help="Dieser Wert ist typischerweise vorgegeben, kann aber von Ihnen angepasst werden.")
+            nk_muell_old = st.number_input("Müll/Straßenreinigung 📌", value=200, step=None, key="nk_muell_old")
 
         nko2c1, nko2c2, nko2c3, nko2c4 = st.columns(4)
         with nko2c1:
-            nk_wasser_old = st.number_input("Wasser/Kanal/Niederschlag 📌", value=525, step=None, key="nk_wasser_old", help="Wasser, Kanalgebühren & Niederschlagswasser. Dieser Wert ist typischerweise vorgegeben, kann aber von Ihnen angepasst werden.")
+            nk_wasser_old = st.number_input("Wasser/Kanal/Niederschlag 📌", value=525, step=None, key="nk_wasser_old", help="Wasser, Kanalgebühren & Niederschlagswasser.")
         with nko2c2:
-            nk_schornstein_old = st.number_input("Schornsteinfeger/Heizung 📌", value=300, step=None, key="nk_schorn_old", help="Dieser Wert ist typischerweise vorgegeben, kann aber von Ihnen angepasst werden.")
+            nk_schornstein_old = st.number_input("Schornsteinfeger/Heizung 📌", value=300, step=None, key="nk_schorn_old")
         with nko2c3:
-            nk_verbrauch_old = st.number_input("Verbrauchskosten 📌", value=4020, step=None, key="nk_verbr_old", help="Dieser Wert ist typischerweise vorgegeben, kann aber von Ihnen angepasst werden.")
+            nk_verbrauch_old = st.number_input("Verbrauchskosten 📌", value=4020, step=None, key="nk_verbr_old")
         with nko2c4:
             pass
 
@@ -339,7 +339,7 @@ with row2_col2:
         st.header("Einkommen")
         r5c1, r5c2 = st.columns(2)
         with r5c1:
-            job_salary_net = st.number_input("Monatliches Netto-Gehalt (€) 📌", value=2600, step=None, help="Dieser Wert ist typischerweise vorgegeben, kann aber von Ihnen angepasst werden.")
+            job_salary_net = st.number_input("Monatliches Netto-Gehalt (€) 📌", value=2600, step=None)
         with r5c2:
             other_income = st.number_input("Andere Einkommensquellen (€)", value=0, step=None)
 
@@ -360,15 +360,15 @@ with row3_col1:
         st.header("Laufende Kosten (Privat, mtl.)")
         pr1c1, pr1c2, pr1c3 = st.columns(3)
         with pr1c1:
-            priv_nahrung = st.number_input("Nahrungsmittel", value=400, step=None)
+            priv_nahrung = st.number_input("Nahrungsmittel", value=200, step=None)
         with pr1c2:
-            priv_mobilitaet = st.number_input("Mobilität (Auto, ÖPNV)", value=300, step=None)
+            priv_mobilitaet = st.number_input("Mobilität (Auto, ÖPNV)", value=43.50, step=None)
         with pr1c3:
             priv_versicherungen = st.number_input("Versicherungen", value=150, step=None)
 
         pr2c1, pr2c2, pr2c3 = st.columns(3)
         with pr2c1:
-            priv_kommunikation = st.number_input("Kommunikation", value=60, step=None, help="Internet, Handy, etc.")
+            priv_kommunikation = st.number_input("Kommunikation (Handy, Internet)", value=60, step=None)
         with pr2c2:
             priv_sonstiges = st.number_input("Sonstiges", value=100, step=None)
         with pr2c3:
@@ -393,6 +393,36 @@ with row3_col1:
             inst_old_house = st.number_input("Instandhaltungsrücklage Altes Haus", value=50, step=None, help="Sollte ca. 1-2 € pro m² pro Monat betragen")
 
         total_monthly_savings = inst_new_house + inst_old_house
+
+    with st.container(border=True):
+        st.header("Bank-Risikoprüfung 🏦")
+
+        # 1. Beleihungsauslauf (LTV)
+        ltv = loan_amount / purchase_price if purchase_price > 0 else 0
+        ltv_pct = ltv * 100
+        ltv_color = "green" if ltv_pct < 60 else "orange" if ltv_pct <= 80 else "red"
+
+        # 2. Wohnkostenquote (Kapitaldienstgrenze)
+        wkq = actual_monthly_payment / total_monthly_income if total_monthly_income > 0 else 0
+        wkq_pct = wkq * 100
+        wkq_color = "green" if wkq_pct <= 30 else "orange" if wkq_pct <= 40 else "red"
+
+        # 3. Bewirtschaftungspauschale
+        bewirtschaftung_pauschale = wohnflaeche_new * 2.5
+
+        # 4. Zins- und Tilgungsanteil (für den 1. Monat)
+        zins_anteil_1m = loan_amount * (interest_rate / 100 / 12)
+        tilgung_anteil_1m = actual_monthly_payment - zins_anteil_1m
+
+        b1, b2 = st.columns(2)
+        help_svg = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor" xmlns="http://www.w3.org/2000/svg" color="inherit" style="width: 1rem; height: 1rem; margin-left: 4px; vertical-align: middle; color: rgba(49, 51, 63, 0.6);"><path fill="none" d="M0 0h24v24H0V0z"></path><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"></path></svg>'
+
+        with b1:
+            st.markdown(f"**Beleihungsauslauf (LTV)** <span title='Zeigt, wie viel Prozent des eigentlichen Hauswertes die Bank finanzieren muss. Unter 80 % ist gut, unter 60 % gibt es Bestzinsen.' style='cursor: help;'>{help_svg}</span><br><span style='color:{ltv_color}; font-weight:bold;'>{format_eur(ltv_pct)} %</span>", unsafe_allow_html=True)
+            st.markdown(f"**Wohnkostenquote** <span title='Prüft, wie viel Prozent unseres monatlichen Haushaltsnettoeinkommens für die Rate draufgehen. Das darf für die Bank nicht über 40 % rutschen.' style='cursor: help;'>{help_svg}</span><br><span style='color:{wkq_color}; font-weight:bold;'>{format_eur(wkq_pct)} %</span>", unsafe_allow_html=True)
+        with b2:
+            st.markdown(f"**Bewirtschaftungspauschale** <span title='Das ist der Puffer, den die Bank in ihrer Haushaltsrechnung für Heizung, Instandhaltung und Müll abzieht. Sie rechnet meist mit 2,50 € pro Quadratmeter im Monat.' style='cursor: help;'>{help_svg}</span><br>€{format_eur(bewirtschaftung_pauschale)}", unsafe_allow_html=True)
+            st.markdown(f"**1. Monat Zins / Tilgung** <span title='Damit wir direkt sehen, wie viel von unserer hohen Rate im ersten Monat in den eigenen Vermögensaufbau (Tilgung) und wie viel an die Bank (Zins) fließt.' style='cursor: help;'>{help_svg}</span><br>€{format_eur(zins_anteil_1m)} / €{format_eur(tilgung_anteil_1m)}", unsafe_allow_html=True)
 
 
 with row3_col2:
@@ -449,39 +479,3 @@ with row3_col2:
             </div>
             """, unsafe_allow_html=True)
             st.write(f"**Jährlicher Netto Cashflow:** €{format_eur(net_yearly_cash_flow_b)}")
-
-# --- ROW 4: Bank-Risikoprüfung ---
-st.markdown("---")
-row4_col1, row4_col2 = st.columns(2)
-
-with row4_col1:
-    with st.container(border=True):
-        st.header("Bank-Risikoprüfung 🏦")
-
-        # 1. Beleihungsauslauf (LTV)
-        ltv = loan_amount / purchase_price if purchase_price > 0 else 0
-        ltv_pct = ltv * 100
-        ltv_color = "green" if ltv_pct < 60 else "orange" if ltv_pct <= 80 else "red"
-
-        # 2. Wohnkostenquote (Kapitaldienstgrenze)
-        wkq = actual_monthly_payment / total_monthly_income if total_monthly_income > 0 else 0
-        wkq_pct = wkq * 100
-        wkq_color = "green" if wkq_pct <= 30 else "orange" if wkq_pct <= 40 else "red"
-
-        # 3. Bewirtschaftungspauschale
-        bewirtschaftung_pauschale = wohnflaeche_new * 2.5
-
-        # 4. Zins- und Tilgungsanteil (für den 1. Monat)
-        zins_anteil_1m = loan_amount * (interest_rate / 100 / 12)
-        tilgung_anteil_1m = actual_monthly_payment - zins_anteil_1m
-
-        b1, b2 = st.columns(2)
-        with b1:
-            st.markdown(f"**Beleihungsauslauf (LTV):** <span style='color:{ltv_color}; font-weight:bold;'>{format_eur(ltv_pct)} %</span>", unsafe_allow_html=True)
-            st.markdown(f"**Wohnkostenquote:** <span style='color:{wkq_color}; font-weight:bold;'>{format_eur(wkq_pct)} %</span>", unsafe_allow_html=True)
-        with b2:
-            st.markdown(f"**Bewirtschaftungspauschale:** €{format_eur(bewirtschaftung_pauschale)}", unsafe_allow_html=True)
-            st.markdown(f"**1. Monat Zins / Tilgung:** €{format_eur(zins_anteil_1m)} / €{format_eur(tilgung_anteil_1m)}", unsafe_allow_html=True)
-
-with row4_col2:
-    pass
