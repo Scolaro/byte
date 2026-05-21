@@ -200,7 +200,7 @@ with tab_vermietung:
             with r1a1:
                 down_payment = st.number_input("Eigenkapital (€)", value=160000, step=None, help="Bargeld, das Sie für den Kauf, die Nebenkosten und Renovierungen einsetzen.")
             with r1a2:
-                wohnflaeche_new = st.number_input("Wohnfläche (m²)", value=180, step=None)
+                wohnflaeche_new = st.number_input("Wohnfläche (m²)", value=250, step=None)
             with r1a3:
                 pass
 
@@ -539,12 +539,16 @@ with tab_verkauf:
         with st.container(border=True):
             # --- Block 1: Kapitalbedarf ---
             st.header("1. Kapitalbedarf (Das neue Haus)")
-            kaufpreis_neues_haus = st.number_input("Kaufpreis neues Haus (€)", value=300000.0, step=None, key="verkauf_kaufpreis")
+
+            b1c1, b1c2 = st.columns(2)
+            with b1c1:
+                kaufpreis_neues_haus = st.number_input("Kaufpreis neues Haus (€)", value=600000, step=None, key="verkauf_kaufpreis")
+            with b1c2:
+                sanierung_umzug = st.number_input("Reparaturen & Umzug (€)", value=20000, step=None, key="verkauf_sanierung")
 
             kaufnebenkosten = kaufpreis_neues_haus * 0.075
-            st.write(f"Kaufnebenkosten Hessen (7,5%): €{format_eur(kaufnebenkosten)}")
 
-            sanierung_umzug = st.number_input("Reparaturen & Umzug (€)", value=20000.0, step=None, key="verkauf_sanierung")
+            st.write(f"Kaufnebenkosten Hessen (7,5%): €{format_eur(kaufnebenkosten)}")
 
             gesamter_kapitalbedarf = kaufpreis_neues_haus + kaufnebenkosten + sanierung_umzug
             st.markdown(f'<div class="calculated-result" style="margin-top:15px; font-size: 1.2rem;">Gesamter Kapitalbedarf: <b>€{format_eur(gesamter_kapitalbedarf)}</b></div>', unsafe_allow_html=True)
@@ -552,8 +556,12 @@ with tab_verkauf:
         with st.container(border=True):
             # --- Block 2: Eigenkapital ---
             st.header("2. Eigenkapital")
-            netto_erloes_altes_haus = st.number_input("Netto-Erlös Verkauf Altes Haus (€)", value=300000.0, step=None, help="Konservativ geschätzt")
-            sonstiges_eigenkapital = st.number_input("Sonstiges Eigenkapital (€)", value=100000.0, step=None, help="Ersparnisse etc.")
+
+            b2c1, b2c2 = st.columns(2)
+            with b2c1:
+                netto_erloes_altes_haus = st.number_input("Netto-Erlös Verkauf Altes Haus (€)", value=300000, step=None, help="Konservativ geschätzt")
+            with b2c2:
+                sonstiges_eigenkapital = st.number_input("Sonstiges Eigenkapital (€)", value=160000, step=None, help="Ersparnisse etc.")
 
             gesamtes_eigenkapital = netto_erloes_altes_haus + sonstiges_eigenkapital
             st.markdown(f'<div class="calculated-result" style="margin-top:15px; font-size: 1.2rem;">Gesamtes Eigenkapital: <b>€{format_eur(gesamtes_eigenkapital)}</b></div>', unsafe_allow_html=True)
@@ -599,22 +607,22 @@ with tab_verkauf:
             # --- Block 4: Haushaltsrechnung ---
             st.header("4. Haushaltsrechnung")
 
-            vh1, vh2 = st.columns(2)
+            vh1, vh2, vh3, vh4 = st.columns(4)
             with vh1:
-                haushalts_brutto = st.number_input("Jährliches Bruttogehalt (€)", value=50000.0, step=None, key="verkauf_brutto")
+                haushalts_brutto = st.number_input("Jährliches Bruttogehalt (€)", value=55000, step=None, key="verkauf_brutto")
             with vh2:
                 haushalts_kv = st.number_input("Krankenkassenbeitrag (%)", value=16.8, step=None, format="%.1f", key="verkauf_kv")
+            with vh3:
+                wohnflaeche_neues_haus = st.number_input("Wohnfläche neues Haus (m²)", value=250, step=None, key="verkauf_wohnflaeche")
+            with vh4:
+                abzug_lebenshaltung = st.number_input("Lebenshaltungskosten (€)", value=1500, step=None, help="Kfz auf 0 lassen", key="verkauf_lebenshaltung")
 
             haushaltsnetto = berechne_netto(haushalts_brutto, haushalts_kv)
-            st.markdown(f"**Berechnetes monatliches Netto:** €{format_eur(haushaltsnetto)}")
-
-            st.write(f"Abzug Kreditrate: €{format_eur(-monatliche_rate)}")
-
-            wohnflaeche_neues_haus = st.number_input("Wohnfläche neues Haus (m²)", value=180.0, step=None, key="verkauf_wohnflaeche")
             abzug_bewirtschaftung = -(wohnflaeche_neues_haus * 2.5)
-            st.write(f"Abzug Bewirtschaftung Neues Haus: €{format_eur(abzug_bewirtschaftung)} (Kalkulatorische 2,50 € pro m²)")
 
-            abzug_lebenshaltung = st.number_input("Abzug Lebenshaltungskosten (€)", value=1500.0, step=None, help="Achtung: Kfz-Kosten auf 0 lassen", key="verkauf_lebenshaltung")
+            st.markdown(f"**Berechnetes monatliches Netto:** €{format_eur(haushaltsnetto)}")
+            st.write(f"Abzug Kreditrate: €{format_eur(-monatliche_rate)}")
+            st.write(f"Abzug Bewirtschaftung Neues Haus: €{format_eur(abzug_bewirtschaftung)} (Kalkulatorische 2,50 € pro m²)")
 
             freier_puffer = haushaltsnetto - monatliche_rate + abzug_bewirtschaftung - abzug_lebenshaltung
 
