@@ -159,372 +159,491 @@ def berechne_netto(brutto_jahr, kv_satz):
     return netto_jahr / 12.0
 
 
-row1_col1, row1_col2 = st.columns(2)
+tab_vermietung, tab_verkauf = st.tabs(["Szenario Vermietung", "Szenario Verkauf"])
 
-with row1_col2:
-    with st.container(border=True):
-        st.header("2. Das Alte Haus (Vermietung)")
+with tab_vermietung:
+    row1_col1, row1_col2 = st.columns(2)
 
-        r4c1, r4c2, r4c3 = st.columns(3)
-        with r4c1:
-            monthly_rent = st.number_input("Monatliche Mieteinnahmen", value=1400, step=None)
-        with r4c2:
-            renovations_old = st.number_input("Reparaturen vor Vermietung", value=10000, step=None)
-        with r4c3:
-            tax_rate_rent = st.number_input("Pausch. Steuersatz Mieterträge (%)", value=25.0, step=None, help="Puffer für die Einkommensteuer auf den Netto-Mietüberschuss. In der Realität greift hier Ihr persönlicher Grenzsteuersatz.")
+    with row1_col2:
+        with st.container(border=True):
+            st.header("2. Das Alte Haus (Vermietung)")
 
-        r4a_1, r4a_2 = st.columns(2)
-        with r4a_1:
-            afa_old_house = st.number_input("Jährliche Gebäudeabschreibung (AfA) in € 📌", value=3699.13, step=None, help="Mindert die Steuerlast, aber nicht den Cashflow.")
-        with r4a_2:
-            mietausfallwagnis_percent = st.number_input("Mietausfallwagnis (%)", value=2.5, step=None, help="Simuliert Leerstand und Mieterwechsel.")
+            r4c1, r4c2, r4c3 = st.columns(3)
+            with r4c1:
+                monthly_rent = st.number_input("Monatliche Mieteinnahmen", value=1400, step=None)
+            with r4c2:
+                renovations_old = st.number_input("Reparaturen vor Vermietung", value=10000, step=None)
+            with r4c3:
+                tax_rate_rent = st.number_input("Pausch. Steuersatz Mieterträge (%)", value=25.0, step=None, help="Puffer für die Einkommensteuer auf den Netto-Mietüberschuss. In der Realität greift hier Ihr persönlicher Grenzsteuersatz.")
 
-        yearly_rent = monthly_rent * 12
-        rent_result_placeholder = st.empty()
+            r4a_1, r4a_2 = st.columns(2)
+            with r4a_1:
+                afa_old_house = st.number_input("Jährliche Gebäudeabschreibung (AfA) in € 📌", value=3699.13, step=None, help="Mindert die Steuerlast, aber nicht den Cashflow.")
+            with r4a_2:
+                mietausfallwagnis_percent = st.number_input("Mietausfallwagnis (%)", value=2.5, step=None, help="Simuliert Leerstand und Mieterwechsel.")
 
-
-with row1_col1:
-    with st.container(border=True):
-        st.header("1. Das Neue Haus (Kauf)")
-
-        r1c1, r1c2, r1c3 = st.columns(3)
-        with r1c1:
-            purchase_price = st.number_input("Kaufpreis (€)", value=600000, step=None)
-        with r1c2:
-            closing_costs_percent = st.number_input("Kaufnebenkosten (%)", value=8.0, step=None, help="In Hessen beträgt die Grunderwerbsteuer 6%. Notar und Grundbuchamt machen ca. 2% aus.")
-        with r1c3:
-            renovations_new = st.number_input("Reparaturen vor Einzug", value=10000, step=None)
-
-        r1a1, r1a2, r1a3 = st.columns(3)
-        with r1a1:
-            down_payment = st.number_input("Eigenkapital (€)", value=160000, step=None, help="Bargeld, das Sie für den Kauf, die Nebenkosten und Renovierungen einsetzen.")
-        with r1a2:
-            wohnflaeche_new = st.number_input("Wohnfläche (m²)", value=180, step=None)
-        with r1a3:
-            pass
-
-        closing_costs_eur = purchase_price * (closing_costs_percent / 100)
-        total_capital_needed = purchase_price + closing_costs_eur + renovations_new + renovations_old
-        loan_amount = total_capital_needed - down_payment
-
-        r2c1, r2c2, r2c3, r2c4 = st.columns(4)
-        with r2c1:
-            st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Benötigtes Kapital: <b>€{format_eur(total_capital_needed)}</b></div>', unsafe_allow_html=True)
-            st.markdown(f'<div class="calculated-result">Benötigter Kreditbetrag: <b>€{format_eur(loan_amount)}</b></div>', unsafe_allow_html=True)
-        with r2c2:
-            st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Kaufnebenkosten: <b>€{format_eur(closing_costs_eur)}</b></div>', unsafe_allow_html=True)
-        with r2c3:
-            pass
-        with r2c4:
-            pass
+            yearly_rent = monthly_rent * 12
+            rent_result_placeholder = st.empty()
 
 
-# --- ROW 2: Laufende Nebenkosten ---
-row2_col1, row2_col2 = st.columns(2)
+    with row1_col1:
+        with st.container(border=True):
+            st.header("1. Das Neue Haus (Kauf)")
 
-with row2_col1:
-    with st.container(border=True):
-        st.header("Laufende Nebenkosten (Jahr)")
+            r1c1, r1c2, r1c3 = st.columns(3)
+            with r1c1:
+                purchase_price = st.number_input("Kaufpreis (€)", value=600000, step=None)
+            with r1c2:
+                closing_costs_percent = st.number_input("Kaufnebenkosten (%)", value=8.0, step=None, help="In Hessen beträgt die Grunderwerbsteuer 6%. Notar und Grundbuchamt machen ca. 2% aus.")
+            with r1c3:
+                renovations_new = st.number_input("Reparaturen vor Einzug", value=10000, step=None)
 
-        nk1c1, nk1c2, nk1c3, nk1c4 = st.columns(4)
-        with nk1c1:
-            nk_versicherung_new = st.number_input("Wohngebäudevers.", value=1000, step=None, key="nk_vers_new")
-        with nk1c2:
-            nk_grundsteuer_new = st.number_input("Grundsteuer", value=550, step=None, key="nk_gs_new")
-        with nk1c3:
-            nk_muell_new = st.number_input("Müll/Straßenreinigung", value=200, step=None, key="nk_muell_new")
-        with nk1c4:
-            nk_wasser_new = st.number_input("Wasser/Kanal/Niederschlag", value=525, step=None, key="nk_wasser_new", help="Wasser, Kanalgebühren & Niederschlagswasser")
-
-        nk2c1, nk2c2, nk2c3, nk2c4 = st.columns(4)
-        with nk2c1:
-            nk_schornstein_new = st.number_input("Schornsteinfeger/Heizung", value=300, step=None, key="nk_schorn_new")
-        with nk2c2:
-            nk_verbrauch_new = st.number_input("Verbrauchskosten", value=4020, step=None, key="nk_verbr_new")
-        with nk2c3:
-            pass
-        with nk2c4:
-            pass
-
-        yearly_nebenkosten_new = nk_versicherung_new + nk_grundsteuer_new + nk_muell_new + nk_wasser_new + nk_schornstein_new + nk_verbrauch_new
-        monthly_nebenkosten_new = yearly_nebenkosten_new / 12
-
-        nk3c1, nk3c2, nk3c3, nk3c4 = st.columns(4)
-        with nk3c1:
-            st.markdown(f'<div class="calculated-result">Jährliche Nebenkosten: <b>€{format_eur(yearly_nebenkosten_new)}</b></div>', unsafe_allow_html=True)
-        with nk3c2:
-            st.markdown(f'<div class="calculated-result">Monatliche Nebenkosten: <b>€{format_eur(monthly_nebenkosten_new)}</b></div>', unsafe_allow_html=True)
-        with nk3c3:
-            pass
-        with nk3c4:
-            pass
-
-    with st.container(border=True):
-        st.header("Hypotheken-Details")
-        h4c1, h4c2, h4c3, h4c4 = st.columns(4)
-        with h4c1:
-            interest_rate = st.number_input("Zinssatz (%)", value=3.5, step=None)
-        with h4c2:
-            tilgungssatz = st.number_input("Anfängl. Tilgung (%)", value=2.0, step=None)
-        with h4c3:
-            zinsbindung = st.number_input("Zinsbindung (Jahre)", value=15, step=None)
-        with h4c4:
-            sondertilgung = st.number_input("Jährl. Sondertilgung (€)", value=0, step=None)
-
-        if loan_amount <= 0:
-            actual_monthly_payment = 0.0
-            st.success("Ihr Eigenkapital deckt alle Kosten! Keine Hypothek erforderlich.")
-        else:
-            r = interest_rate / 100
-            t = tilgungssatz / 100
-            monthly_interest = r / 12
-            actual_monthly_payment = (loan_amount * (r + t)) / 12
-
-            current_balance = loan_amount
-            months_passed = 0
-            balance_at_fixed_end = loan_amount
-            max_months = 1200 # 100 years max loop to prevent infinite hangs
-
-            while current_balance > 0 and months_passed < max_months:
-                interest_payment = current_balance * monthly_interest
-
-                # If payment covers the rest, pay it off
-                if current_balance + interest_payment <= actual_monthly_payment:
-                    current_balance = 0
-                    months_passed += 1
-                    if months_passed == int(zinsbindung * 12):
-                        balance_at_fixed_end = current_balance
-                    break
-
-                principal_payment = actual_monthly_payment - interest_payment
-
-                if principal_payment <= 0 and sondertilgung <= 0:
-                    months_passed = float('inf')
-                    break
-
-                current_balance -= principal_payment
-                months_passed += 1
-
-                if months_passed % 12 == 0:
-                    current_balance -= sondertilgung
-
-                current_balance = max(0, current_balance)
-
-                if months_passed == int(zinsbindung * 12):
-                    balance_at_fixed_end = current_balance
-
-            if months_passed < int(zinsbindung * 12):
-                balance_at_fixed_end = 0
-
-            total_years = months_passed / 12 if months_passed != float('inf') else float('inf')
-
-            hc_res1, hc_res2, hc_res3 = st.columns(3)
-            with hc_res1:
-                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Erforderliche monatliche Rate: <b>€{format_eur(actual_monthly_payment)}</b></div>', unsafe_allow_html=True)
-            with hc_res2:
-                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Restschuld nach {int(zinsbindung)} Jahren: <b>€{format_eur(balance_at_fixed_end)}</b></div>', unsafe_allow_html=True)
-            with hc_res3:
-                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Geschätzte Gesamtlaufzeit: <b>{format_eur(total_years)} Jahre</b></div>', unsafe_allow_html=True)
-
-
-with row2_col2:
-    with st.container(border=True):
-        st.header("Laufende Nebenkosten (Jahr)")
-
-        nko1c1, nko1c2, nko1c3, nko1c4 = st.columns(4)
-        with nko1c1:
-            nk_haftpflicht_old = st.number_input("Haftpflicht 📌", value=100, step=None, key="nk_haft_old")
-        with nko1c2:
-            nk_versicherung_old = st.number_input("Wohngebäudevers. 📌", value=1100, step=None, key="nk_vers_old")
-        with nko1c3:
-            nk_grundsteuer_old = st.number_input("Grundsteuer 📌", value=430, step=None, key="nk_gs_old")
-        with nko1c4:
-            nk_muell_old = st.number_input("Müll/Straßenreinigung 📌", value=200, step=None, key="nk_muell_old")
-
-        nko2c1, nko2c2, nko2c3, nko2c4 = st.columns(4)
-        with nko2c1:
-            nk_wasser_old = st.number_input("Wasser/Kanal/Niederschlag 📌", value=525, step=None, key="nk_wasser_old", help="Wasser, Kanalgebühren & Niederschlagswasser.")
-        with nko2c2:
-            nk_schornstein_old = st.number_input("Schornsteinfeger/Heizung 📌", value=300, step=None, key="nk_schorn_old")
-        with nko2c3:
-            nk_verbrauch_old = st.number_input("Verbrauchskosten 📌", value=4020, step=None, key="nk_verbr_old")
-        with nko2c4:
-            pass
-
-        yearly_nebenkosten_old = nk_haftpflicht_old + nk_versicherung_old + nk_grundsteuer_old + nk_muell_old + nk_wasser_old + nk_schornstein_old + nk_verbrauch_old
-        monthly_nebenkosten_old = yearly_nebenkosten_old / 12
-
-        nko3c1, nko3c2, nko3c3, nko3c4 = st.columns(4)
-        with nko3c1:
-            st.markdown(f'<div class="calculated-result">Jährliche Nebenkosten: <b>€{format_eur(yearly_nebenkosten_old)}</b></div>', unsafe_allow_html=True)
-        with nko3c2:
-            st.markdown(f'<div class="calculated-result">Monatliche Nebenkosten: <b>€{format_eur(monthly_nebenkosten_old)}</b></div>', unsafe_allow_html=True)
-        with nko3c3:
-            pass
-        with nko3c4:
-            pass
-
-        real_monthly_rent = monthly_rent * (1 - (mietausfallwagnis_percent / 100))
-        monthly_afa_old = afa_old_house / 12
-
-        tax_base = real_monthly_rent - monthly_afa_old
-        if tax_base > 0:
-            rental_tax = tax_base * (tax_rate_rent / 100)
-        else:
-            rental_tax = 0.0
-
-        # The net rental cash flow is the real rent minus the taxes paid
-        net_rental_surplus = real_monthly_rent - rental_tax
-
-        with rent_result_placeholder.container():
-            r4_res1, r4_res2, r4_res3 = st.columns(3)
-            with r4_res1:
-                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Jährliche Mieteinnahmen (Kaltmiete): <b>€{format_eur(yearly_rent)}</b></div>', unsafe_allow_html=True)
-            with r4_res2:
-                help_icon_svg = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor" xmlns="http://www.w3.org/2000/svg" color="inherit" style="width: 1rem; height: 1rem; margin-left: 4px; vertical-align: middle; color: rgba(49, 51, 63, 0.6);"><path fill="none" d="M0 0h24v24H0V0z"></path><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"></path></svg>'
-                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Netto-Mietüberschuss (mtl., nach Steuerabzug) <span title="Miete - Mietausfallwagnis - Steuern" style="cursor: help;">{help_icon_svg}</span>: <b>€{format_eur(net_rental_surplus)}</b></div>', unsafe_allow_html=True)
-            with r4_res3:
+            r1a1, r1a2, r1a3 = st.columns(3)
+            with r1a1:
+                down_payment = st.number_input("Eigenkapital (€)", value=160000, step=None, help="Bargeld, das Sie für den Kauf, die Nebenkosten und Renovierungen einsetzen.")
+            with r1a2:
+                wohnflaeche_new = st.number_input("Wohnfläche (m²)", value=180, step=None)
+            with r1a3:
                 pass
 
-    with st.container(border=True):
-        st.header("Einkommen")
-        st.write("Berechnung des Netto-Gehalts für Steuerklasse 1 in Hessen ohne Kirchensteuer.")
-        r5c1, r5c2, r5c3 = st.columns(3)
-        with r5c1:
-            brutto_jahr = st.number_input("Jährliches Bruttogehalt (€)", value=55000, step=None)
-        with r5c2:
-            kv_satz = st.number_input("Gesetzlicher Krankenkassenbeitrag (%)", value=16.8, step=None, format="%.1f")
-        with r5c3:
-            other_income = st.number_input("Andere Einkommensquellen (Netto/Monat €)", value=0, step=None)
+            closing_costs_eur = purchase_price * (closing_costs_percent / 100)
+            total_capital_needed = purchase_price + closing_costs_eur + renovations_new + renovations_old
+            loan_amount = total_capital_needed - down_payment
 
-        job_salary_net = berechne_netto(brutto_jahr, kv_satz)
-
-        st.markdown(f"**Berechnetes monatliches Netto-Gehalt:** €{format_eur(job_salary_net)}")
-
-        total_monthly_income = job_salary_net + other_income
-
-        r6c1, r6c2 = st.columns(2)
-        with r6c1:
-            st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Gesamtes jährliches Einkommen: <b>€{format_eur(total_monthly_income * 12)}</b></div>', unsafe_allow_html=True)
-        with r6c2:
-            st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Gesamtes monatliches Einkommen: <b>€{format_eur(total_monthly_income)}</b></div>', unsafe_allow_html=True)
+            r2c1, r2c2, r2c3, r2c4 = st.columns(4)
+            with r2c1:
+                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Benötigtes Kapital: <b>€{format_eur(total_capital_needed)}</b></div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="calculated-result">Benötigter Kreditbetrag: <b>€{format_eur(loan_amount)}</b></div>', unsafe_allow_html=True)
+            with r2c2:
+                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Kaufnebenkosten: <b>€{format_eur(closing_costs_eur)}</b></div>', unsafe_allow_html=True)
+            with r2c3:
+                pass
+            with r2c4:
+                pass
 
 
-# --- ROW 3: Stacked Left Column vs Finanzielle Analyse Right Column ---
-row3_col1, row3_col2 = st.columns(2)
+    # --- ROW 2: Laufende Nebenkosten ---
+    row2_col1, row2_col2 = st.columns(2)
 
-with row3_col1:
-    with st.container(border=True):
-        st.header("Laufende Kosten (Privat, mtl.)")
-        pr1c1, pr1c2, pr1c3 = st.columns(3)
-        with pr1c1:
-            priv_nahrung = st.number_input("Nahrungsmittel", value=200, step=None)
-        with pr1c2:
-            priv_mobilitaet = st.number_input("Mobilität (Auto, ÖPNV)", value=43.50, step=None)
-        with pr1c3:
-            priv_versicherungen = st.number_input("Versicherungen", value=150, step=None)
+    with row2_col1:
+        with st.container(border=True):
+            st.header("Laufende Nebenkosten (Jahr)")
 
-        pr2c1, pr2c2, pr2c3 = st.columns(3)
-        with pr2c1:
-            priv_kommunikation = st.number_input("Kommunikation (Handy, Internet)", value=60, step=None)
-        with pr2c2:
-            priv_sonstiges = st.number_input("Sonstiges", value=100, step=None)
-        with pr2c3:
-            pass
+            nk1c1, nk1c2, nk1c3, nk1c4 = st.columns(4)
+            with nk1c1:
+                nk_versicherung_new = st.number_input("Wohngebäudevers.", value=1000, step=None, key="nk_vers_new")
+            with nk1c2:
+                nk_grundsteuer_new = st.number_input("Grundsteuer", value=550, step=None, key="nk_gs_new")
+            with nk1c3:
+                nk_muell_new = st.number_input("Müll/Straßenreinigung", value=200, step=None, key="nk_muell_new")
+            with nk1c4:
+                nk_wasser_new = st.number_input("Wasser/Kanal/Niederschlag", value=525, step=None, key="nk_wasser_new", help="Wasser, Kanalgebühren & Niederschlagswasser")
 
-        monthly_nebenkosten_privat = priv_nahrung + priv_mobilitaet + priv_versicherungen + priv_kommunikation + priv_sonstiges
+            nk2c1, nk2c2, nk2c3, nk2c4 = st.columns(4)
+            with nk2c1:
+                nk_schornstein_new = st.number_input("Schornsteinfeger/Heizung", value=300, step=None, key="nk_schorn_new")
+            with nk2c2:
+                nk_verbrauch_new = st.number_input("Verbrauchskosten", value=4020, step=None, key="nk_verbr_new")
+            with nk2c3:
+                pass
+            with nk2c4:
+                pass
 
-        pr3c1, pr3c2, pr3c3 = st.columns(3)
-        with pr3c1:
-            st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Jährliche Privatkosten: <b>€{format_eur(monthly_nebenkosten_privat * 12)}</b></div>', unsafe_allow_html=True)
-        with pr3c2:
-            st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Monatliche Privatkosten: <b>€{format_eur(monthly_nebenkosten_privat)}</b></div>', unsafe_allow_html=True)
-        with pr3c3:
-            pass
+            yearly_nebenkosten_new = nk_versicherung_new + nk_grundsteuer_new + nk_muell_new + nk_wasser_new + nk_schornstein_new + nk_verbrauch_new
+            monthly_nebenkosten_new = yearly_nebenkosten_new / 12
 
-    with st.container(border=True):
-        st.header("Bank-Risikoprüfung 🏦")
+            nk3c1, nk3c2, nk3c3, nk3c4 = st.columns(4)
+            with nk3c1:
+                st.markdown(f'<div class="calculated-result">Jährliche Nebenkosten: <b>€{format_eur(yearly_nebenkosten_new)}</b></div>', unsafe_allow_html=True)
+            with nk3c2:
+                st.markdown(f'<div class="calculated-result">Monatliche Nebenkosten: <b>€{format_eur(monthly_nebenkosten_new)}</b></div>', unsafe_allow_html=True)
+            with nk3c3:
+                pass
+            with nk3c4:
+                pass
 
-        # 1. Beleihungsauslauf (LTV)
-        ltv = loan_amount / purchase_price if purchase_price > 0 else 0
-        ltv_pct = ltv * 100
-        ltv_color = "green" if ltv_pct < 60 else "orange" if ltv_pct <= 80 else "red"
+        with st.container(border=True):
+            st.header("Hypotheken-Details")
+            h4c1, h4c2, h4c3, h4c4 = st.columns(4)
+            with h4c1:
+                interest_rate = st.number_input("Zinssatz (%)", value=3.5, step=None)
+            with h4c2:
+                tilgungssatz = st.number_input("Anfängl. Tilgung (%)", value=2.0, step=None)
+            with h4c3:
+                zinsbindung = st.number_input("Zinsbindung (Jahre)", value=15, step=None)
+            with h4c4:
+                sondertilgung = st.number_input("Jährl. Sondertilgung (€)", value=0, step=None)
 
-        # 2. Wohnkostenquote (Kapitaldienstgrenze)
-        wkq = actual_monthly_payment / total_monthly_income if total_monthly_income > 0 else 0
-        wkq_pct = wkq * 100
-        wkq_color = "green" if wkq_pct <= 30 else "orange" if wkq_pct <= 40 else "red"
+            if loan_amount <= 0:
+                actual_monthly_payment = 0.0
+                st.success("Ihr Eigenkapital deckt alle Kosten! Keine Hypothek erforderlich.")
+            else:
+                r = interest_rate / 100
+                t = tilgungssatz / 100
+                monthly_interest = r / 12
+                actual_monthly_payment = (loan_amount * (r + t)) / 12
 
-        # 3. Bewirtschaftungspauschale
-        bewirtschaftung_pauschale = wohnflaeche_new * 2.5
+                current_balance = loan_amount
+                months_passed = 0
+                balance_at_fixed_end = loan_amount
+                max_months = 1200 # 100 years max loop to prevent infinite hangs
 
-        # 4. Zins- und Tilgungsanteil (für den 1. Monat)
-        zins_anteil_1m = loan_amount * (interest_rate / 100 / 12)
-        tilgung_anteil_1m = actual_monthly_payment - zins_anteil_1m
+                while current_balance > 0 and months_passed < max_months:
+                    interest_payment = current_balance * monthly_interest
 
-        b1, b2 = st.columns(2)
-        help_svg = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor" xmlns="http://www.w3.org/2000/svg" color="inherit" style="width: 1rem; height: 1rem; margin-left: 4px; vertical-align: middle; color: rgba(49, 51, 63, 0.6);"><path fill="none" d="M0 0h24v24H0V0z"></path><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"></path></svg>'
+                    # If payment covers the rest, pay it off
+                    if current_balance + interest_payment <= actual_monthly_payment:
+                        current_balance = 0
+                        months_passed += 1
+                        if months_passed == int(zinsbindung * 12):
+                            balance_at_fixed_end = current_balance
+                        break
 
-        with b1:
-            st.markdown(f"**Beleihungsauslauf (LTV)** <span title='Zeigt, wie viel Prozent des eigentlichen Hauswertes die Bank finanzieren muss. Unter 80 % ist gut, unter 60 % gibt es Bestzinsen.' style='cursor: help;'>{help_svg}</span><br><span style='color:{ltv_color}; font-weight:bold;'>{format_eur(ltv_pct)} %</span>", unsafe_allow_html=True)
-            st.markdown(f"**Wohnkostenquote** <span title='Prüft, wie viel Prozent unseres monatlichen Haushaltsnettoeinkommens für die Rate draufgehen. Das darf für die Bank nicht über 40 % rutschen.' style='cursor: help;'>{help_svg}</span><br><span style='color:{wkq_color}; font-weight:bold;'>{format_eur(wkq_pct)} %</span>", unsafe_allow_html=True)
-        with b2:
-            st.markdown(f"**Bewirtschaftungspauschale** <span title='Das ist der Puffer, den die Bank in ihrer Haushaltsrechnung für Heizung, Instandhaltung und Müll abzieht. Sie rechnet meist mit 2,50 € pro Quadratmeter im Monat.' style='cursor: help;'>{help_svg}</span><br>€{format_eur(bewirtschaftung_pauschale)}", unsafe_allow_html=True)
-            st.markdown(f"**1. Monat Zins / Tilgung** <span title='Damit wir direkt sehen, wie viel von unserer hohen Rate im ersten Monat in den eigenen Vermögensaufbau (Tilgung) und wie viel an die Bank (Zins) fließt.' style='cursor: help;'>{help_svg}</span><br>€{format_eur(zins_anteil_1m)} / €{format_eur(tilgung_anteil_1m)}", unsafe_allow_html=True)
+                    principal_payment = actual_monthly_payment - interest_payment
 
-    st.markdown("<div style='margin-bottom: 30px;'></div>", unsafe_allow_html=True)
+                    if principal_payment <= 0 and sondertilgung <= 0:
+                        months_passed = float('inf')
+                        break
 
-with row3_col2:
-    with st.container(border=True):
-        st.header("Finanzielle Analyse 💰")
+                    current_balance -= principal_payment
+                    months_passed += 1
 
-        total_monthly_burden = actual_monthly_payment + monthly_nebenkosten_new + monthly_nebenkosten_privat
+                    if months_passed % 12 == 0:
+                        current_balance -= sondertilgung
 
-        st.subheader("Ausgaben (Monatlich)")
+                    current_balance = max(0, current_balance)
 
-        ausg1, ausg2, ausg3 = st.columns(3)
-        with ausg1:
-            st.metric("Erforderliche Rate (Kredit)", f"€{format_eur(actual_monthly_payment)}")
-        with ausg2:
-            st.metric("Nebenkosten (Haus)", f"€{format_eur(monthly_nebenkosten_new)}")
-        with ausg3:
-            st.metric("Privatkosten", f"€{format_eur(monthly_nebenkosten_privat)}")
+                    if months_passed == int(zinsbindung * 12):
+                        balance_at_fixed_end = current_balance
 
-        st.markdown(f'<div class="calculated-result" style="margin-top:15px; font-size: 1.5rem;">Gesamte monatliche Belastung: <b>€{format_eur(total_monthly_burden)}</b></div>', unsafe_allow_html=True)
+                if months_passed < int(zinsbindung * 12):
+                    balance_at_fixed_end = 0
 
-        st.markdown("---")
-        st.write("Vergleich der Ausgaben mit Ihrem Einkommen und den versteuerten Einnahmen aus dem alten Haus.")
+                total_years = months_passed / 12 if months_passed != float('inf') else float('inf')
 
-        cf_col1, cf_col2 = st.columns(2)
+                hc_res1, hc_res2, hc_res3 = st.columns(3)
+                with hc_res1:
+                    st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Erforderliche monatliche Rate: <b>€{format_eur(actual_monthly_payment)}</b></div>', unsafe_allow_html=True)
+                with hc_res2:
+                    st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Restschuld nach {int(zinsbindung)} Jahren: <b>€{format_eur(balance_at_fixed_end)}</b></div>', unsafe_allow_html=True)
+                with hc_res3:
+                    st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Geschätzte Gesamtlaufzeit: <b>{format_eur(total_years)} Jahre</b></div>', unsafe_allow_html=True)
 
-        with cf_col1:
-            st.subheader("Szenario A (Vermietet)")
 
-            # Scenario A
-            net_monthly_cash_flow_a = total_monthly_income + net_rental_surplus - total_monthly_burden
-            net_yearly_cash_flow_a = net_monthly_cash_flow_a * 12
+    with row2_col2:
+        with st.container(border=True):
+            st.header("Laufende Nebenkosten (Jahr)")
 
-            box_class_a = "cashflow-positive" if net_monthly_cash_flow_a >= 0 else "cashflow-negative"
-            st.markdown(f"""
-            <div class="cashflow-box {box_class_a}">
-                <div class="cashflow-label">Netto Cashflow</div>
-                <div class="cashflow-value">€{format_eur(net_monthly_cash_flow_a)}</div>
-            </div>
-            """, unsafe_allow_html=True)
-            st.write(f"**Jährlicher Netto Cashflow:** €{format_eur(net_yearly_cash_flow_a)}")
+            nko1c1, nko1c2, nko1c3, nko1c4 = st.columns(4)
+            with nko1c1:
+                nk_haftpflicht_old = st.number_input("Haftpflicht 📌", value=100, step=None, key="nk_haft_old")
+            with nko1c2:
+                nk_versicherung_old = st.number_input("Wohngebäudevers. 📌", value=1100, step=None, key="nk_vers_old")
+            with nko1c3:
+                nk_grundsteuer_old = st.number_input("Grundsteuer 📌", value=430, step=None, key="nk_gs_old")
+            with nko1c4:
+                nk_muell_old = st.number_input("Müll/Straßenreinigung 📌", value=200, step=None, key="nk_muell_old")
 
-        with cf_col2:
-            st.subheader("Szenario B (Leerstand)")
+            nko2c1, nko2c2, nko2c3, nko2c4 = st.columns(4)
+            with nko2c1:
+                nk_wasser_old = st.number_input("Wasser/Kanal/Niederschlag 📌", value=525, step=None, key="nk_wasser_old", help="Wasser, Kanalgebühren & Niederschlagswasser.")
+            with nko2c2:
+                nk_schornstein_old = st.number_input("Schornsteinfeger/Heizung 📌", value=300, step=None, key="nk_schorn_old")
+            with nko2c3:
+                nk_verbrauch_old = st.number_input("Verbrauchskosten 📌", value=4020, step=None, key="nk_verbr_old")
+            with nko2c4:
+                pass
 
-            # Scenario B: empty house means no rent, owner pays old house Nebenkosten
-            net_monthly_cash_flow_b = total_monthly_income - total_monthly_burden - monthly_nebenkosten_old
-            net_yearly_cash_flow_b = net_monthly_cash_flow_b * 12
+            yearly_nebenkosten_old = nk_haftpflicht_old + nk_versicherung_old + nk_grundsteuer_old + nk_muell_old + nk_wasser_old + nk_schornstein_old + nk_verbrauch_old
+            monthly_nebenkosten_old = yearly_nebenkosten_old / 12
 
-            box_class_b = "cashflow-positive" if net_monthly_cash_flow_b >= 0 else "cashflow-negative"
-            st.markdown(f"""
-            <div class="cashflow-box {box_class_b}">
-                <div class="cashflow-label">Netto Cashflow</div>
-                <div class="cashflow-value">€{format_eur(net_monthly_cash_flow_b)}</div>
-            </div>
-            """, unsafe_allow_html=True)
-            st.write(f"**Jährlicher Netto Cashflow:** €{format_eur(net_yearly_cash_flow_b)}")
+            nko3c1, nko3c2, nko3c3, nko3c4 = st.columns(4)
+            with nko3c1:
+                st.markdown(f'<div class="calculated-result">Jährliche Nebenkosten: <b>€{format_eur(yearly_nebenkosten_old)}</b></div>', unsafe_allow_html=True)
+            with nko3c2:
+                st.markdown(f'<div class="calculated-result">Monatliche Nebenkosten: <b>€{format_eur(monthly_nebenkosten_old)}</b></div>', unsafe_allow_html=True)
+            with nko3c3:
+                pass
+            with nko3c4:
+                pass
+
+            real_monthly_rent = monthly_rent * (1 - (mietausfallwagnis_percent / 100))
+            monthly_afa_old = afa_old_house / 12
+
+            tax_base = real_monthly_rent - monthly_afa_old
+            if tax_base > 0:
+                rental_tax = tax_base * (tax_rate_rent / 100)
+            else:
+                rental_tax = 0.0
+
+            # The net rental cash flow is the real rent minus the taxes paid
+            net_rental_surplus = real_monthly_rent - rental_tax
+
+            with rent_result_placeholder.container():
+                r4_res1, r4_res2, r4_res3 = st.columns(3)
+                with r4_res1:
+                    st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Jährliche Mieteinnahmen (Kaltmiete): <b>€{format_eur(yearly_rent)}</b></div>', unsafe_allow_html=True)
+                with r4_res2:
+                    help_icon_svg = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor" xmlns="http://www.w3.org/2000/svg" color="inherit" style="width: 1rem; height: 1rem; margin-left: 4px; vertical-align: middle; color: rgba(49, 51, 63, 0.6);"><path fill="none" d="M0 0h24v24H0V0z"></path><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"></path></svg>'
+                    st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Netto-Mietüberschuss (mtl., nach Steuerabzug) <span title="Miete - Mietausfallwagnis - Steuern" style="cursor: help;">{help_icon_svg}</span>: <b>€{format_eur(net_rental_surplus)}</b></div>', unsafe_allow_html=True)
+                with r4_res3:
+                    pass
+
+        with st.container(border=True):
+            st.header("Einkommen")
+            st.write("Berechnung des Netto-Gehalts für Steuerklasse 1 in Hessen ohne Kirchensteuer.")
+            r5c1, r5c2, r5c3 = st.columns(3)
+            with r5c1:
+                brutto_jahr = st.number_input("Jährliches Bruttogehalt (€)", value=55000, step=None)
+            with r5c2:
+                kv_satz = st.number_input("Gesetzlicher Krankenkassenbeitrag (%)", value=16.8, step=None, format="%.1f")
+            with r5c3:
+                other_income = st.number_input("Andere Einkommensquellen (Netto/Monat €)", value=0, step=None)
+
+            job_salary_net = berechne_netto(brutto_jahr, kv_satz)
+
+            st.markdown(f"**Berechnetes monatliches Netto-Gehalt:** €{format_eur(job_salary_net)}")
+
+            total_monthly_income = job_salary_net + other_income
+
+            r6c1, r6c2 = st.columns(2)
+            with r6c1:
+                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Gesamtes jährliches Einkommen: <b>€{format_eur(total_monthly_income * 12)}</b></div>', unsafe_allow_html=True)
+            with r6c2:
+                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Gesamtes monatliches Einkommen: <b>€{format_eur(total_monthly_income)}</b></div>', unsafe_allow_html=True)
+
+
+    # --- ROW 3: Stacked Left Column vs Finanzielle Analyse Right Column ---
+    row3_col1, row3_col2 = st.columns(2)
+
+    with row3_col1:
+        with st.container(border=True):
+            st.header("Laufende Kosten (Privat, mtl.)")
+            pr1c1, pr1c2, pr1c3 = st.columns(3)
+            with pr1c1:
+                priv_nahrung = st.number_input("Nahrungsmittel", value=200, step=None)
+            with pr1c2:
+                priv_mobilitaet = st.number_input("Mobilität (Auto, ÖPNV)", value=43.50, step=None)
+            with pr1c3:
+                priv_versicherungen = st.number_input("Versicherungen", value=150, step=None)
+
+            pr2c1, pr2c2, pr2c3 = st.columns(3)
+            with pr2c1:
+                priv_kommunikation = st.number_input("Kommunikation (Handy, Internet)", value=60, step=None)
+            with pr2c2:
+                priv_sonstiges = st.number_input("Sonstiges", value=100, step=None)
+            with pr2c3:
+                pass
+
+            monthly_nebenkosten_privat = priv_nahrung + priv_mobilitaet + priv_versicherungen + priv_kommunikation + priv_sonstiges
+
+            pr3c1, pr3c2, pr3c3 = st.columns(3)
+            with pr3c1:
+                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Jährliche Privatkosten: <b>€{format_eur(monthly_nebenkosten_privat * 12)}</b></div>', unsafe_allow_html=True)
+            with pr3c2:
+                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Monatliche Privatkosten: <b>€{format_eur(monthly_nebenkosten_privat)}</b></div>', unsafe_allow_html=True)
+            with pr3c3:
+                pass
+
+        with st.container(border=True):
+            st.header("Bank-Risikoprüfung 🏦")
+
+            # 1. Beleihungsauslauf (LTV)
+            ltv = loan_amount / purchase_price if purchase_price > 0 else 0
+            ltv_pct = ltv * 100
+            ltv_color = "green" if ltv_pct < 60 else "orange" if ltv_pct <= 80 else "red"
+
+            # 2. Wohnkostenquote (Kapitaldienstgrenze)
+            wkq = actual_monthly_payment / total_monthly_income if total_monthly_income > 0 else 0
+            wkq_pct = wkq * 100
+            wkq_color = "green" if wkq_pct <= 30 else "orange" if wkq_pct <= 40 else "red"
+
+            # 3. Bewirtschaftungspauschale
+            bewirtschaftung_pauschale = wohnflaeche_new * 2.5
+
+            # 4. Zins- und Tilgungsanteil (für den 1. Monat)
+            zins_anteil_1m = loan_amount * (interest_rate / 100 / 12)
+            tilgung_anteil_1m = actual_monthly_payment - zins_anteil_1m
+
+            b1, b2 = st.columns(2)
+            help_svg = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor" xmlns="http://www.w3.org/2000/svg" color="inherit" style="width: 1rem; height: 1rem; margin-left: 4px; vertical-align: middle; color: rgba(49, 51, 63, 0.6);"><path fill="none" d="M0 0h24v24H0V0z"></path><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"></path></svg>'
+
+            with b1:
+                st.markdown(f"**Beleihungsauslauf (LTV)** <span title='Zeigt, wie viel Prozent des eigentlichen Hauswertes die Bank finanzieren muss. Unter 80 % ist gut, unter 60 % gibt es Bestzinsen.' style='cursor: help;'>{help_svg}</span><br><span style='color:{ltv_color}; font-weight:bold;'>{format_eur(ltv_pct)} %</span>", unsafe_allow_html=True)
+                st.markdown(f"**Wohnkostenquote** <span title='Prüft, wie viel Prozent unseres monatlichen Haushaltsnettoeinkommens für die Rate draufgehen. Das darf für die Bank nicht über 40 % rutschen.' style='cursor: help;'>{help_svg}</span><br><span style='color:{wkq_color}; font-weight:bold;'>{format_eur(wkq_pct)} %</span>", unsafe_allow_html=True)
+            with b2:
+                st.markdown(f"**Bewirtschaftungspauschale** <span title='Das ist der Puffer, den die Bank in ihrer Haushaltsrechnung für Heizung, Instandhaltung und Müll abzieht. Sie rechnet meist mit 2,50 € pro Quadratmeter im Monat.' style='cursor: help;'>{help_svg}</span><br>€{format_eur(bewirtschaftung_pauschale)}", unsafe_allow_html=True)
+                st.markdown(f"**1. Monat Zins / Tilgung** <span title='Damit wir direkt sehen, wie viel von unserer hohen Rate im ersten Monat in den eigenen Vermögensaufbau (Tilgung) und wie viel an die Bank (Zins) fließt.' style='cursor: help;'>{help_svg}</span><br>€{format_eur(zins_anteil_1m)} / €{format_eur(tilgung_anteil_1m)}", unsafe_allow_html=True)
+
+        st.markdown("<div style='margin-bottom: 30px;'></div>", unsafe_allow_html=True)
+
+    with row3_col2:
+        with st.container(border=True):
+            st.header("Finanzielle Analyse 💰")
+
+            total_monthly_burden = actual_monthly_payment + monthly_nebenkosten_new + monthly_nebenkosten_privat
+
+            st.subheader("Ausgaben (Monatlich)")
+
+            ausg1, ausg2, ausg3 = st.columns(3)
+            with ausg1:
+                st.metric("Erforderliche Rate (Kredit)", f"€{format_eur(actual_monthly_payment)}")
+            with ausg2:
+                st.metric("Nebenkosten (Haus)", f"€{format_eur(monthly_nebenkosten_new)}")
+            with ausg3:
+                st.metric("Privatkosten", f"€{format_eur(monthly_nebenkosten_privat)}")
+
+            st.markdown(f'<div class="calculated-result" style="margin-top:15px; font-size: 1.5rem;">Gesamte monatliche Belastung: <b>€{format_eur(total_monthly_burden)}</b></div>', unsafe_allow_html=True)
+
+            st.markdown("---")
+            st.write("Vergleich der Ausgaben mit Ihrem Einkommen und den versteuerten Einnahmen aus dem alten Haus.")
+
+            cf_col1, cf_col2 = st.columns(2)
+
+            with cf_col1:
+                st.subheader("Szenario A (Vermietet)")
+
+                # Scenario A
+                net_monthly_cash_flow_a = total_monthly_income + net_rental_surplus - total_monthly_burden
+                net_yearly_cash_flow_a = net_monthly_cash_flow_a * 12
+
+                box_class_a = "cashflow-positive" if net_monthly_cash_flow_a >= 0 else "cashflow-negative"
+                st.markdown(f"""
+                <div class="cashflow-box {box_class_a}">
+                    <div class="cashflow-label">Netto Cashflow</div>
+                    <div class="cashflow-value">€{format_eur(net_monthly_cash_flow_a)}</div>
+                </div>
+                """, unsafe_allow_html=True)
+                st.write(f"**Jährlicher Netto Cashflow:** €{format_eur(net_yearly_cash_flow_a)}")
+
+            with cf_col2:
+                st.subheader("Szenario B (Leerstand)")
+
+                # Scenario B: empty house means no rent, owner pays old house Nebenkosten
+                net_monthly_cash_flow_b = total_monthly_income - total_monthly_burden - monthly_nebenkosten_old
+                net_yearly_cash_flow_b = net_monthly_cash_flow_b * 12
+
+                box_class_b = "cashflow-positive" if net_monthly_cash_flow_b >= 0 else "cashflow-negative"
+                st.markdown(f"""
+                <div class="cashflow-box {box_class_b}">
+                    <div class="cashflow-label">Netto Cashflow</div>
+                    <div class="cashflow-value">€{format_eur(net_monthly_cash_flow_b)}</div>
+                </div>
+                """, unsafe_allow_html=True)
+                st.write(f"**Jährlicher Netto Cashflow:** €{format_eur(net_yearly_cash_flow_b)}")
+
+
+
+with tab_verkauf:
+    st.write("Ermitteln Sie die finanzielle Machbarkeit des Kaufs eines neuen Hauses, während Sie Ihr aktuelles Haus verkaufen.")
+
+    # --- Block 1: Kapitalbedarf ---
+    st.header("1. Kapitalbedarf (Das neue Haus)")
+    kaufpreis_neues_haus = st.number_input("Kaufpreis neues Haus (€)", value=600000.0, step=None, key="verkauf_kaufpreis")
+
+    kaufnebenkosten = kaufpreis_neues_haus * 0.075
+    st.write(f"Kaufnebenkosten Hessen (7,5%): €{format_eur(kaufnebenkosten)}")
+
+    sanierung_umzug = st.number_input("Sanierung & Umzug (€)", value=50000.0, step=None, key="verkauf_sanierung")
+
+    gesamter_kapitalbedarf = kaufpreis_neues_haus + kaufnebenkosten + sanierung_umzug
+    st.markdown(f"**Gesamter Kapitalbedarf:** €{format_eur(gesamter_kapitalbedarf)}")
+
+    st.markdown("---")
+
+    # --- Block 2: Eigenkapital ---
+    st.header("2. Eigenkapital (Die Finanzierungsgrundlage)")
+    netto_erloes_altes_haus = st.number_input("Netto-Erlös Verkauf Altes Haus (€)", value=300000.0, step=None, help="Konservativ geschätzt")
+    sonstiges_eigenkapital = st.number_input("Sonstiges Eigenkapital (€)", value=50000.0, step=None, help="Ersparnisse etc.")
+
+    gesamtes_eigenkapital = netto_erloes_altes_haus + sonstiges_eigenkapital
+    st.markdown(f"**Gesamtes Eigenkapital:** €{format_eur(gesamtes_eigenkapital)}")
+
+    st.markdown("---")
+
+    # --- Block 3: Der Kredit & Die Rate ---
+    st.header("3. Der Kredit & Die Rate")
+    kreditsumme = gesamter_kapitalbedarf - gesamtes_eigenkapital
+    st.markdown(f"**Kreditsumme:** €{format_eur(kreditsumme)}")
+
+    vk1, vk2, vk3 = st.columns(3)
+    with vk1:
+        zinssatz = st.number_input("Zinssatz (%)", value=3.5, step=None, format="%.2f", key="verkauf_zins")
+    with vk2:
+        tilgungssatz = st.number_input("Tilgungssatz (%)", value=2.0, step=None, format="%.2f", key="verkauf_tilgung")
+    with vk3:
+        zinsbindung = st.number_input("Zinsbindung in Jahren", value=15, step=None, key="verkauf_bindung")
+
+    monatliche_rate = (kreditsumme * ((zinssatz + tilgungssatz) / 100)) / 12
+    st.markdown(f"**Monatliche Rate:** €{format_eur(monatliche_rate)}")
+
+    st.markdown("---")
+
+    # --- Block 4: Haushaltsrechnung ---
+    st.header("4. Haushaltsrechnung (Ohne das alte Haus)")
+    haushaltsnetto = st.number_input("Monatliches Haushaltsnettoeinkommen (€)", value=4000.0, step=None, key="verkauf_netto")
+
+    st.write(f"Abzug Kreditrate: €{format_eur(-monatliche_rate)}")
+
+    wohnflaeche_neues_haus = st.number_input("Wohnfläche neues Haus (m²)", value=180.0, step=None, key="verkauf_wohnflaeche")
+    abzug_bewirtschaftung = -(wohnflaeche_neues_haus * 2.5)
+    st.write(f"Abzug Bewirtschaftung Neues Haus: €{format_eur(abzug_bewirtschaftung)} (Kalkulatorische 2,50 € pro m²)")
+
+    abzug_lebenshaltung = st.number_input("Abzug Lebenshaltungskosten (€)", value=1500.0, step=None, help="Achtung: Kfz-Kosten auf 0 lassen", key="verkauf_lebenshaltung")
+
+    freier_puffer = haushaltsnetto - monatliche_rate + abzug_bewirtschaftung - abzug_lebenshaltung
+
+    puffer_color = "green" if freier_puffer >= 0 else "red"
+    st.markdown(f"**Frei verfügbarer Puffer:** <span style='color:{puffer_color}; font-weight:bold;'>€{format_eur(freier_puffer)}</span>", unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    # --- Block 5: Bank-Risikoprüfung ---
+    st.header("5. Bank-Risikoprüfung (Das Banken-Dashboard)")
+
+    # Beleihungsauslauf (LTV)
+    ltv = kreditsumme / kaufpreis_neues_haus if kaufpreis_neues_haus > 0 else 0
+    ltv_pct = ltv * 100
+    ltv_color = "green" if ltv_pct < 80 else "red"
+
+    # Wohnkostenquote
+    wkq = monatliche_rate / haushaltsnetto if haushaltsnetto > 0 else 0
+    wkq_pct = wkq * 100
+    wkq_color = "green" if wkq_pct < 40 else "red"
+
+    # Excel-like FV and PPMT/IPMT functions
+    import numpy_financial as npf
+    # npf uses rate per period, nper, pmt, pv
+    # FV: FV(rate, nper, pmt, pv)
+    rate_per_month = (zinssatz / 100) / 12
+    nper = zinsbindung * 12
+    pmt = -monatliche_rate
+    pv = kreditsumme
+
+    # Restschuld nach Zinsbindung
+    if rate_per_month > 0:
+        restschuld = abs(npf.fv(rate_per_month, nper, pmt, pv))
+    else:
+        restschuld = pv + (pmt * nper)
+
+    # Tilgungsanteil 1. Monat: PPMT(rate, per, nper, pv)
+    if rate_per_month > 0:
+        tilgung_1m = npf.ppmt(rate_per_month, 1, nper, -pv)
+    else:
+        tilgung_1m = -pmt
+
+    # Zinsanteil 1. Monat: IPMT(rate, per, nper, pv)
+    if rate_per_month > 0:
+        zins_1m = npf.ipmt(rate_per_month, 1, nper, -pv)
+    else:
+        zins_1m = 0
+
+    b1, b2 = st.columns(2)
+    with b1:
+        st.markdown(f"**Beleihungsauslauf (LTV)**<br><span style='color:{ltv_color}; font-weight:bold;'>{format_eur(ltv_pct)} %</span> (Ziel: < 80%)", unsafe_allow_html=True)
+        st.markdown(f"**Wohnkostenquote**<br><span style='color:{wkq_color}; font-weight:bold;'>{format_eur(wkq_pct)} %</span> (Ziel: < 40%)", unsafe_allow_html=True)
+        st.markdown(f"**Restschuld nach Zinsbindung**<br>€{format_eur(restschuld)}", unsafe_allow_html=True)
+
+    with b2:
+        st.markdown(f"**Tilgungsanteil 1. Monat**<br>€{format_eur(tilgung_1m)}", unsafe_allow_html=True)
+        st.markdown(f"**Zinsanteil 1. Monat**<br>€{format_eur(zins_1m)}", unsafe_allow_html=True)

@@ -64,4 +64,13 @@ Hier sehen Sie die wichtigsten Kennzahlen, die Banken intern zur Kreditvergabe n
 - **Wohnkostenquote:** Zeigt, wie viel Prozent Ihres Nettoeinkommens für die monatliche Kreditrate aufgewendet werden muss. (Sollte unter 30-40% liegen).
 - **Bewirtschaftungspauschale:** Pauschaler Abzug der Bank für Nebenkosten (oft 2,50 € pro m²).
 - **Zins- und Tilgungsanteil (1. Monat):** Zeigt auf einen Blick, wie viel Ihrer ersten Rate in Ihren Vermögensaufbau (Tilgung) und wie viel an die Bank (Zinsen) fließt.
+
+---
+## Szenario Verkauf (Das Neue Dashboard)
+Im Reiter **Szenario Verkauf** vergleichen wir die Option, das alte Haus nicht zu vermieten, sondern abzustoßen, um den Erlös als Eigenkapital für das neue Haus zu nutzen.
+* **1. Kapitalbedarf:** Bündelt Kaufpreis, Nebenkosten und Sanierungskosten des neuen Hauses.
+* **2. Eigenkapital:** Setzt sich aus dem erwarteten Netto-Erlös Ihres alten Hauses sowie weiteren Ersparnissen zusammen.
+* **3. Kredit & Rate:** Da das Eigenkapital deutlich höher ist, fällt die benötigte Kreditsumme geringer aus. Die Rate wird klassisch mit Zinssatz und Tilgung berechnet.
+* **4. Haushaltsrechnung:** Prüft, ob Ihr (manuell eingegebenes) Haushaltsnettoeinkommen ausreicht, um die neue Kreditrate, die kalkulatorische Bewirtschaftung des neuen Hauses (2,50 € pro m²) und Ihre regulären Lebenshaltungskosten zu decken.
+* **5. Bank-Risikoprüfung:** Zeigt LTV, Wohnkostenquote, die voraussichtliche Restschuld nach der Zinsbindung und den exakten Tilgungs-/Zinsanteil der Rate im ersten Monat nach finanzmathematischen Standards (wie in Excel).
 """)
