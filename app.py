@@ -21,10 +21,10 @@ st.markdown("""
 }
 
 /* Hide Streamlit number input step up/down arrows natively */
-div[data-testid="stNumberInputStepUp"] {
+button[aria-label="Step up"] {
     display: none !important;
 }
-div[data-testid="stNumberInputStepDown"] {
+button[aria-label="Step down"] {
     display: none !important;
 }
 input[type=number] {
@@ -95,9 +95,7 @@ div[data-testid="stMetricValue"] {
 
 st.title("🏡 Hausprojekt-Rechner")
 
-st.page_link("pages/1_Erklaerung.py", label="📖 Detaillierte Erklärung der Berechnungen anzeigen", icon="👉")
-
-st.write("Ermitteln Sie die finanzielle Machbarkeit des Kaufs eines neuen Hauses zur Eigennutzung, während Sie Ihr aktuelles Haus vermieten.")
+st.write("Ermitteln Sie die finanzielle Machbarkeit des Kaufs eines neuen Hauses zur Eigennutzung, unabhängig davon, ob Sie Ihr aktuelles Haus vermieten oder verkaufen.")
 
 def format_eur(amount):
     """Format numbers into German EUR style, e.g., 1.000,00"""
@@ -159,7 +157,7 @@ def berechne_netto(brutto_jahr, kv_satz):
     return netto_jahr / 12.0
 
 
-tab_vermietung, tab_verkauf = st.tabs(["Szenario Vermietung", "Szenario Verkauf"])
+tab_vermietung, tab_verkauf, tab_erklaerung = st.tabs(["Szenario Vermietung", "Szenario Verkauf", "Erklärung"])
 
 with tab_vermietung:
     row1_col1, row1_col2 = st.columns(2)
@@ -535,115 +533,193 @@ with tab_vermietung:
 
 
 with tab_verkauf:
-    st.write("Ermitteln Sie die finanzielle Machbarkeit des Kaufs eines neuen Hauses, während Sie Ihr aktuelles Haus verkaufen.")
+    verkauf_col1, verkauf_col2 = st.columns(2)
 
-    # --- Block 1: Kapitalbedarf ---
-    st.header("1. Kapitalbedarf (Das neue Haus)")
-    kaufpreis_neues_haus = st.number_input("Kaufpreis neues Haus (€)", value=600000.0, step=None, key="verkauf_kaufpreis")
+    with verkauf_col1:
+        with st.container(border=True):
+            # --- Block 1: Kapitalbedarf ---
+            st.header("1. Kapitalbedarf (Das neue Haus)")
+            kaufpreis_neues_haus = st.number_input("Kaufpreis neues Haus (€)", value=300000.0, step=None, key="verkauf_kaufpreis")
 
-    kaufnebenkosten = kaufpreis_neues_haus * 0.075
-    st.write(f"Kaufnebenkosten Hessen (7,5%): €{format_eur(kaufnebenkosten)}")
+            kaufnebenkosten = kaufpreis_neues_haus * 0.075
+            st.write(f"Kaufnebenkosten Hessen (7,5%): €{format_eur(kaufnebenkosten)}")
 
-    sanierung_umzug = st.number_input("Sanierung & Umzug (€)", value=50000.0, step=None, key="verkauf_sanierung")
+            sanierung_umzug = st.number_input("Reparaturen & Umzug (€)", value=20000.0, step=None, key="verkauf_sanierung")
 
-    gesamter_kapitalbedarf = kaufpreis_neues_haus + kaufnebenkosten + sanierung_umzug
-    st.markdown(f"**Gesamter Kapitalbedarf:** €{format_eur(gesamter_kapitalbedarf)}")
+            gesamter_kapitalbedarf = kaufpreis_neues_haus + kaufnebenkosten + sanierung_umzug
+            st.markdown(f'<div class="calculated-result" style="margin-top:15px; font-size: 1.2rem;">Gesamter Kapitalbedarf: <b>€{format_eur(gesamter_kapitalbedarf)}</b></div>', unsafe_allow_html=True)
+
+        with st.container(border=True):
+            # --- Block 2: Eigenkapital ---
+            st.header("2. Eigenkapital")
+            netto_erloes_altes_haus = st.number_input("Netto-Erlös Verkauf Altes Haus (€)", value=300000.0, step=None, help="Konservativ geschätzt")
+            sonstiges_eigenkapital = st.number_input("Sonstiges Eigenkapital (€)", value=100000.0, step=None, help="Ersparnisse etc.")
+
+            gesamtes_eigenkapital = netto_erloes_altes_haus + sonstiges_eigenkapital
+            st.markdown(f'<div class="calculated-result" style="margin-top:15px; font-size: 1.2rem;">Gesamtes Eigenkapital: <b>€{format_eur(gesamtes_eigenkapital)}</b></div>', unsafe_allow_html=True)
+
+        # We need kreditsumme, zins, rate and haushaltsnetto early for Bank-Risiko
+        kreditsumme = max(0, gesamter_kapitalbedarf - gesamtes_eigenkapital)
+
+    with verkauf_col2:
+        with st.container(border=True):
+            # --- Block 3: Kreditkosten ---
+            st.header("3. Kreditkosten")
+            st.markdown(f"**Kreditsumme:** €{format_eur(kreditsumme)}")
+
+            vk1, vk2, vk3 = st.columns(3)
+            with vk1:
+                zinssatz = st.number_input("Zinssatz (%)", value=3.5, step=None, format="%.2f", key="verkauf_zins")
+            with vk2:
+                tilgungssatz = st.number_input("Tilgungssatz (%)", value=2.0, step=None, format="%.2f", key="verkauf_tilgung")
+            with vk3:
+                zinsbindung = st.number_input("Zinsbindung in Jahren", value=15, step=None, key="verkauf_bindung")
+
+            if kreditsumme > 0:
+                monatliche_rate = (kreditsumme * ((zinssatz + tilgungssatz) / 100)) / 12
+
+                import numpy_financial as npf
+                rate_per_month = (zinssatz / 100) / 12
+                nper = zinsbindung * 12
+                pmt = -monatliche_rate
+                pv = kreditsumme
+
+                if rate_per_month > 0:
+                    restschuld = abs(npf.fv(rate_per_month, nper, pmt, pv))
+                else:
+                    restschuld = pv + (pmt * nper)
+            else:
+                monatliche_rate = 0.0
+                restschuld = 0.0
+
+            st.markdown(f"**Monatliche Rate:** €{format_eur(monatliche_rate)}")
+            st.markdown(f"**Restschuld nach Zinsbindung:** €{format_eur(restschuld)}")
+
+        with st.container(border=True):
+            # --- Block 4: Haushaltsrechnung ---
+            st.header("4. Haushaltsrechnung")
+
+            vh1, vh2 = st.columns(2)
+            with vh1:
+                haushalts_brutto = st.number_input("Jährliches Bruttogehalt (€)", value=50000.0, step=None, key="verkauf_brutto")
+            with vh2:
+                haushalts_kv = st.number_input("Krankenkassenbeitrag (%)", value=16.8, step=None, format="%.1f", key="verkauf_kv")
+
+            haushaltsnetto = berechne_netto(haushalts_brutto, haushalts_kv)
+            st.markdown(f"**Berechnetes monatliches Netto:** €{format_eur(haushaltsnetto)}")
+
+            st.write(f"Abzug Kreditrate: €{format_eur(-monatliche_rate)}")
+
+            wohnflaeche_neues_haus = st.number_input("Wohnfläche neues Haus (m²)", value=180.0, step=None, key="verkauf_wohnflaeche")
+            abzug_bewirtschaftung = -(wohnflaeche_neues_haus * 2.5)
+            st.write(f"Abzug Bewirtschaftung Neues Haus: €{format_eur(abzug_bewirtschaftung)} (Kalkulatorische 2,50 € pro m²)")
+
+            abzug_lebenshaltung = st.number_input("Abzug Lebenshaltungskosten (€)", value=1500.0, step=None, help="Achtung: Kfz-Kosten auf 0 lassen", key="verkauf_lebenshaltung")
+
+            freier_puffer = haushaltsnetto - monatliche_rate + abzug_bewirtschaftung - abzug_lebenshaltung
+
+            puffer_color = "green" if freier_puffer >= 0 else "red"
+            st.markdown(f'<div class="calculated-result" style="margin-top:15px; font-size: 1.2rem;">Frei verfügbarer Puffer: <span style="color:{puffer_color};"><b>€{format_eur(freier_puffer)}</b></span></div>', unsafe_allow_html=True)
+
+    with verkauf_col1:
+        with st.container(border=True):
+            # --- Block 5: Bank-Risikoprüfung ---
+            st.header("5. Bank-Risikoprüfung")
+
+            # Beleihungsauslauf (LTV)
+            ltv = kreditsumme / kaufpreis_neues_haus if kaufpreis_neues_haus > 0 else 0
+            ltv_pct = ltv * 100
+            ltv_color = "green" if ltv_pct < 80 else "red"
+
+            # Wohnkostenquote
+            wkq = monatliche_rate / haushaltsnetto if haushaltsnetto > 0 else 0
+            wkq_pct = wkq * 100
+            wkq_color = "green" if wkq_pct < 40 else "red"
+
+            if kreditsumme > 0:
+                # Tilgungsanteil 1. Monat: PPMT(rate, per, nper, pv)
+                if rate_per_month > 0:
+                    tilgung_1m = npf.ppmt(rate_per_month, 1, nper, -pv)
+                else:
+                    tilgung_1m = -pmt
+
+                # Zinsanteil 1. Monat: IPMT(rate, per, nper, pv)
+                if rate_per_month > 0:
+                    zins_1m = npf.ipmt(rate_per_month, 1, nper, -pv)
+                else:
+                    zins_1m = 0
+            else:
+                tilgung_1m = 0.0
+                zins_1m = 0.0
+
+            b1, b2 = st.columns(2)
+            with b1:
+                st.markdown(f"**Beleihungsauslauf (LTV)**<br><span style='color:{ltv_color}; font-weight:bold;'>{format_eur(ltv_pct)} %</span> (Ziel: < 80%)", unsafe_allow_html=True)
+                st.markdown(f"**Wohnkostenquote**<br><span style='color:{wkq_color}; font-weight:bold;'>{format_eur(wkq_pct)} %</span> (Ziel: < 40%)", unsafe_allow_html=True)
+
+            with b2:
+                st.markdown(f"**Tilgungsanteil 1. Monat**<br>€{format_eur(tilgung_1m)}", unsafe_allow_html=True)
+                st.markdown(f"**Zinsanteil 1. Monat**<br>€{format_eur(zins_1m)}", unsafe_allow_html=True)
+
+with tab_erklaerung:
+    st.header("📖 Funktionsweise & Berechnungen")
+    st.markdown("Diese Seite erklärt detailliert, wie der Hausprojekt-Rechner funktioniert, welche Annahmen getroffen werden und wie sich die Endergebnisse zusammensetzen.")
 
     st.markdown("---")
+    st.subheader("Szenario Vermietung")
+    st.markdown("""
+### 1. Das Neue Haus (Kauf)
+Hier wird der finanzielle Grundstein für Ihr neues Eigenheim gelegt:
+- **Benötigtes Kapital:** Summiert den Kaufpreis, die prozentualen Kaufnebenkosten (wie Grunderwerbsteuer, Notar, Grundbuch), die Reparaturen vor dem Einzug ins neue Haus **sowie** die Reparaturen, die vor der Vermietung des alten Hauses anfallen.
+- **Benötigter Kreditbetrag:** Dies ist das benötigte Kapital abzüglich Ihres eingesetzten Eigenkapitals. Dieser Betrag wird durch die Hypothek finanziert.
+- **Erforderliche monatliche Rate (Kredit):** Berechnet nach der in Deutschland üblichen Methode für Annuitätenkredite. Die Rate ergibt sich aus dem gewünschten anfänglichen Tilgungssatz und dem Zinssatz: `(Kreditbetrag * (Zinssatz + Tilgungssatz)) / 12`.
 
-    # --- Block 2: Eigenkapital ---
-    st.header("2. Eigenkapital (Die Finanzierungsgrundlage)")
-    netto_erloes_altes_haus = st.number_input("Netto-Erlös Verkauf Altes Haus (€)", value=300000.0, step=None, help="Konservativ geschätzt")
-    sonstiges_eigenkapital = st.number_input("Sonstiges Eigenkapital (€)", value=50000.0, step=None, help="Ersparnisse etc.")
+### 2. Das Alte Haus (Vermietung)
+Hier erfassen Sie die wirtschaftlichen Eckdaten Ihrer bestehenden Immobilie:
+- **Mieteinnahmen & Mietausfallwagnis:** Die monatliche Kaltmiete wird um das von Ihnen angegebene Mietausfallwagnis reduziert. Dies simuliert realistische Einnahmeverluste durch Leerstand oder Mieterwechsel.
+- **Reparaturen vor Vermietung:** Diese Kosten werden direkt auf den neuen Kreditbetrag aufgeschlagen, da sie in der Regel zeitnah zum Auszug anfallen. *(Tipp: Diese Renovierungskosten können in der Realität oft als sofort abziehbarer Erhaltungsaufwand von der Steuer abgesetzt werden und so in den ersten Jahren zu hohen Steuerrückerstattungen führen).*
+- **Gebäudeabschreibung (AfA) & Steuern:** Mieteinnahmen sind steuerpflichtig. Die Steuerlast berechnet sich aus der realen Miete (Miete abzgl. Ausfallwagnis) abzüglich der Gebäudeabschreibung (AfA). Da die AfA eine reine Steuervergünstigung ist, verlässt das Geld nicht Ihr Konto.
+- **Netto-Mietüberschuss:** Das ist der tatsächliche Betrag, der auf Ihrem Konto landet: Die reale Miete abzüglich der berechneten Steuern. Er fließt positiv in Ihren Cashflow ein.
 
-    gesamtes_eigenkapital = netto_erloes_altes_haus + sonstiges_eigenkapital
-    st.markdown(f"**Gesamtes Eigenkapital:** €{format_eur(gesamtes_eigenkapital)}")
+### 3. Laufende Nebenkosten
+Für beide Häuser erfassen Sie hier die jährlichen Betriebskosten.
+- **Neues Haus:** Diese Kosten tragen Sie in voller Höhe selbst. (Hinweis: Als Selbstnutzer benötigen Sie hier keine spezielle Grundbesitzerhaftpflicht, da dies meist über die private Haftpflicht abgedeckt ist).
+- **Altes Haus:** Bei Vermietung (Szenario A) werden die hier angegebenen umlagefähigen Kosten über die Nebenkostenabrechnung vom Mieter getragen und beeinflussen Ihren Cashflow nicht negativ. Steht das Haus jedoch leer (Szenario B), fallen *alle* Kosten (inklusive der Haus- und Grundbesitzerhaftpflicht) auf Sie zurück.
+
+### 4. Einkommen & Privatkosten
+Damit der Cashflow realistisch ist, betrachten wir Ihr verfügbares Budget:
+- **Netto-Gehalt:** Das monatliche Netto-Gehalt wird basierend auf Ihrem jährlichen Bruttogehalt und dem gesetzlichen Krankenkassenbeitrag automatisch geschätzt (Annahme: Bundesland Hessen, Steuerklasse 1, keine Kirchensteuer).
+- Dieses Netto-Gehalt sowie **weitere Einkommensquellen** bilden die Einnahmenseite.
+- Davon abgezogen werden die **Laufenden Kosten (Privat)** wie Nahrungsmittel, Versicherungen und Sonstiges.
+
+### 5. Finanzielle Analyse (Szenarien)
+Die abschließende Analyse führt alle Ausgaben und Einnahmen zusammen, um Ihren finalen Netto-Cashflow zu ermitteln.
+
+Die **Gesamte monatliche Belastung** setzt sich zusammen aus der Kreditrate für das neue Haus, den Nebenkosten des neuen Hauses und Ihren privaten Lebenshaltungskosten.
+
+* **Szenario A (Vermietet):**
+  Ihr Einkommen wird um den *Netto-Mietüberschuss (nach Steuern)* ergänzt. Davon ziehen wir die gesamte monatliche Belastung ab.
+
+* **Szenario B (Leerstand):**
+  Das alte Haus bringt keine Mieteinnahmen. Ihr Einkommen muss nun die gesamte monatliche Belastung **sowie zusätzlich** die vollen monatlichen Nebenkosten des leerstehenden alten Hauses tragen.
+
+Sollte der Cashflow-Wert rot sein, übersteigen Ihre monatlichen Ausgaben Ihre Einnahmen.
+
+### 6. Bank-Risikoprüfung
+Hier sehen Sie die wichtigsten Kennzahlen, die Banken intern zur Kreditvergabe nutzen:
+- **Beleihungsauslauf (LTV):** Prozentualer Anteil des Kaufpreises, der finanziert wird. (< 60% = Bestzinsen, > 80% = Risiko).
+- **Wohnkostenquote:** Zeigt, wie viel Prozent Ihres Nettoeinkommens für die monatliche Kreditrate aufgewendet werden muss. (Sollte unter 30-40% liegen).
+- **Bewirtschaftungspauschale:** Pauschaler Abzug der Bank für Nebenkosten (oft 2,50 € pro m²).
+- **Zins- und Tilgungsanteil (1. Monat):** Zeigt auf einen Blick, wie viel Ihrer ersten Rate in Ihren Vermögensaufbau (Tilgung) und wie viel an die Bank (Zinsen) fließt.
+    """)
 
     st.markdown("---")
-
-    # --- Block 3: Der Kredit & Die Rate ---
-    st.header("3. Der Kredit & Die Rate")
-    kreditsumme = gesamter_kapitalbedarf - gesamtes_eigenkapital
-    st.markdown(f"**Kreditsumme:** €{format_eur(kreditsumme)}")
-
-    vk1, vk2, vk3 = st.columns(3)
-    with vk1:
-        zinssatz = st.number_input("Zinssatz (%)", value=3.5, step=None, format="%.2f", key="verkauf_zins")
-    with vk2:
-        tilgungssatz = st.number_input("Tilgungssatz (%)", value=2.0, step=None, format="%.2f", key="verkauf_tilgung")
-    with vk3:
-        zinsbindung = st.number_input("Zinsbindung in Jahren", value=15, step=None, key="verkauf_bindung")
-
-    monatliche_rate = (kreditsumme * ((zinssatz + tilgungssatz) / 100)) / 12
-    st.markdown(f"**Monatliche Rate:** €{format_eur(monatliche_rate)}")
-
-    st.markdown("---")
-
-    # --- Block 4: Haushaltsrechnung ---
-    st.header("4. Haushaltsrechnung (Ohne das alte Haus)")
-    haushaltsnetto = st.number_input("Monatliches Haushaltsnettoeinkommen (€)", value=4000.0, step=None, key="verkauf_netto")
-
-    st.write(f"Abzug Kreditrate: €{format_eur(-monatliche_rate)}")
-
-    wohnflaeche_neues_haus = st.number_input("Wohnfläche neues Haus (m²)", value=180.0, step=None, key="verkauf_wohnflaeche")
-    abzug_bewirtschaftung = -(wohnflaeche_neues_haus * 2.5)
-    st.write(f"Abzug Bewirtschaftung Neues Haus: €{format_eur(abzug_bewirtschaftung)} (Kalkulatorische 2,50 € pro m²)")
-
-    abzug_lebenshaltung = st.number_input("Abzug Lebenshaltungskosten (€)", value=1500.0, step=None, help="Achtung: Kfz-Kosten auf 0 lassen", key="verkauf_lebenshaltung")
-
-    freier_puffer = haushaltsnetto - monatliche_rate + abzug_bewirtschaftung - abzug_lebenshaltung
-
-    puffer_color = "green" if freier_puffer >= 0 else "red"
-    st.markdown(f"**Frei verfügbarer Puffer:** <span style='color:{puffer_color}; font-weight:bold;'>€{format_eur(freier_puffer)}</span>", unsafe_allow_html=True)
-
-    st.markdown("---")
-
-    # --- Block 5: Bank-Risikoprüfung ---
-    st.header("5. Bank-Risikoprüfung (Das Banken-Dashboard)")
-
-    # Beleihungsauslauf (LTV)
-    ltv = kreditsumme / kaufpreis_neues_haus if kaufpreis_neues_haus > 0 else 0
-    ltv_pct = ltv * 100
-    ltv_color = "green" if ltv_pct < 80 else "red"
-
-    # Wohnkostenquote
-    wkq = monatliche_rate / haushaltsnetto if haushaltsnetto > 0 else 0
-    wkq_pct = wkq * 100
-    wkq_color = "green" if wkq_pct < 40 else "red"
-
-    # Excel-like FV and PPMT/IPMT functions
-    import numpy_financial as npf
-    # npf uses rate per period, nper, pmt, pv
-    # FV: FV(rate, nper, pmt, pv)
-    rate_per_month = (zinssatz / 100) / 12
-    nper = zinsbindung * 12
-    pmt = -monatliche_rate
-    pv = kreditsumme
-
-    # Restschuld nach Zinsbindung
-    if rate_per_month > 0:
-        restschuld = abs(npf.fv(rate_per_month, nper, pmt, pv))
-    else:
-        restschuld = pv + (pmt * nper)
-
-    # Tilgungsanteil 1. Monat: PPMT(rate, per, nper, pv)
-    if rate_per_month > 0:
-        tilgung_1m = npf.ppmt(rate_per_month, 1, nper, -pv)
-    else:
-        tilgung_1m = -pmt
-
-    # Zinsanteil 1. Monat: IPMT(rate, per, nper, pv)
-    if rate_per_month > 0:
-        zins_1m = npf.ipmt(rate_per_month, 1, nper, -pv)
-    else:
-        zins_1m = 0
-
-    b1, b2 = st.columns(2)
-    with b1:
-        st.markdown(f"**Beleihungsauslauf (LTV)**<br><span style='color:{ltv_color}; font-weight:bold;'>{format_eur(ltv_pct)} %</span> (Ziel: < 80%)", unsafe_allow_html=True)
-        st.markdown(f"**Wohnkostenquote**<br><span style='color:{wkq_color}; font-weight:bold;'>{format_eur(wkq_pct)} %</span> (Ziel: < 40%)", unsafe_allow_html=True)
-        st.markdown(f"**Restschuld nach Zinsbindung**<br>€{format_eur(restschuld)}", unsafe_allow_html=True)
-
-    with b2:
-        st.markdown(f"**Tilgungsanteil 1. Monat**<br>€{format_eur(tilgung_1m)}", unsafe_allow_html=True)
-        st.markdown(f"**Zinsanteil 1. Monat**<br>€{format_eur(zins_1m)}", unsafe_allow_html=True)
+    st.subheader("Szenario Verkauf")
+    st.markdown("""
+Im Reiter **Szenario Verkauf** vergleichen wir die Option, das alte Haus nicht zu vermieten, sondern abzustoßen, um den Erlös als Eigenkapital für das neue Haus zu nutzen.
+* **1. Kapitalbedarf:** Bündelt Kaufpreis, Nebenkosten und Reparaturen & Umzug des neuen Hauses.
+* **2. Eigenkapital:** Setzt sich aus dem erwarteten Netto-Erlös Ihres alten Hauses sowie weiteren Ersparnissen zusammen.
+* **3. Kreditkosten:** Da das Eigenkapital deutlich höher ist, fällt die benötigte Kreditsumme geringer aus. Die Rate wird klassisch mit Zinssatz und Tilgung berechnet. Hier sehen Sie auch die verbleibende Restschuld am Ende der Zinsbindung.
+* **4. Haushaltsrechnung:** Prüft, ob Ihr Haushaltsnettoeinkommen (basierend auf Ihrem Bruttogehalt) ausreicht, um die neue Kreditrate, die kalkulatorische Bewirtschaftung des neuen Hauses (2,50 € pro m²) und Ihre regulären Lebenshaltungskosten zu decken.
+* **5. Bank-Risikoprüfung:** Zeigt LTV, Wohnkostenquote und den exakten Tilgungs-/Zinsanteil der Rate im ersten Monat nach finanzmathematischen Standards.
+    """)
