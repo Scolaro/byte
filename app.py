@@ -164,7 +164,7 @@ with tab_vermietung:
 
     with row1_col2:
         with st.container(border=True):
-            st.header("2. Das Alte Haus (Vermietung)")
+            st.header("Das Alte Haus (Vermietung)")
 
             r4c1, r4c2, r4c3 = st.columns(3)
             with r4c1:
@@ -186,7 +186,7 @@ with tab_vermietung:
 
     with row1_col1:
         with st.container(border=True):
-            st.header("1. Das Neue Haus (Kauf)")
+            st.header("Das Neue Haus (Kauf)")
 
             r1c1, r1c2, r1c3 = st.columns(3)
             with r1c1:
@@ -640,9 +640,12 @@ with tab_verkauf:
             ltv_color = "green" if ltv_pct < 80 else "red"
 
             # Wohnkostenquote
-            wkq = monatliche_rate / haushaltsnetto if haushaltsnetto > 0 else 0
+            wkq = monatliche_rate / total_monthly_income if total_monthly_income > 0 else 0
             wkq_pct = wkq * 100
-            wkq_color = "green" if wkq_pct < 40 else "red"
+            wkq_color = "green" if wkq_pct <= 40 else "red"
+
+            # Bewirtschaftungspauschale
+            bewirtschaftung_pauschale = wohnflaeche_neues_haus * 2.5
 
             if kreditsumme > 0:
                 # Tilgungsanteil 1. Monat: PPMT(rate, per, nper, pv)
@@ -661,13 +664,47 @@ with tab_verkauf:
                 zins_1m = 0.0
 
             b1, b2 = st.columns(2)
-            with b1:
-                st.markdown(f"**Beleihungsauslauf (LTV)**<br><span style='color:{ltv_color}; font-weight:bold;'>{format_eur(ltv_pct)} %</span> (Ziel: < 80%)", unsafe_allow_html=True)
-                st.markdown(f"**Wohnkostenquote**<br><span style='color:{wkq_color}; font-weight:bold;'>{format_eur(wkq_pct)} %</span> (Ziel: < 40%)", unsafe_allow_html=True)
+            help_svg = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor" xmlns="http://www.w3.org/2000/svg" color="inherit" style="width: 1rem; height: 1rem; margin-left: 4px; vertical-align: middle; color: rgba(49, 51, 63, 0.6);"><path fill="none" d="M0 0h24v24H0V0z"></path><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"></path></svg>'
 
+            with b1:
+                st.markdown(f"**Beleihungsauslauf (LTV)** <span title='Zeigt, wie viel Prozent des eigentlichen Hauswertes die Bank finanzieren muss. Unter 80 % ist gut, unter 60 % gibt es Bestzinsen.' style='cursor: help;'>{help_svg}</span><br><span style='color:{ltv_color}; font-weight:bold;'>{format_eur(ltv_pct)} %</span>", unsafe_allow_html=True)
+                st.markdown(f"**Wohnkostenquote** <span title='Prüft, wie viel Prozent unseres monatlichen Haushaltsnettoeinkommens für die Rate draufgehen. Das darf für die Bank nicht über 40 % rutschen.' style='cursor: help;'>{help_svg}</span><br><span style='color:{wkq_color}; font-weight:bold;'>{format_eur(wkq_pct)} %</span>", unsafe_allow_html=True)
             with b2:
-                st.markdown(f"**Tilgungsanteil 1. Monat**<br>€{format_eur(tilgung_1m)}", unsafe_allow_html=True)
-                st.markdown(f"**Zinsanteil 1. Monat**<br>€{format_eur(zins_1m)}", unsafe_allow_html=True)
+                st.markdown(f"**Bewirtschaftungspauschale** <span title='Das ist der Puffer, den die Bank in ihrer Haushaltsrechnung für Heizung, Instandhaltung und Müll abzieht. Sie rechnet meist mit 2,50 € pro Quadratmeter im Monat.' style='cursor: help;'>{help_svg}</span><br>€{format_eur(bewirtschaftung_pauschale)}", unsafe_allow_html=True)
+                st.markdown(f"**1. Monat Zins / Tilgung** <span title='Damit wir direkt sehen, wie viel von unserer hohen Rate im ersten Monat in den eigenen Vermögensaufbau (Tilgung) und wie viel an die Bank (Zins) fließt.' style='cursor: help;'>{help_svg}</span><br>€{format_eur(zins_1m)} / €{format_eur(tilgung_1m)}", unsafe_allow_html=True)
+
+    with verkauf_col2:
+        with st.container(border=True):
+            st.header("Finanzielle Analyse 💰")
+
+            total_monthly_burden = monatliche_rate + monthly_nebenkosten_new + monthly_nebenkosten_privat
+
+            st.subheader("Ausgaben (Monatlich)")
+
+            ausg1, ausg2, ausg3 = st.columns(3)
+            with ausg1:
+                st.metric("Erforderliche Rate (Kredit)", f"€{format_eur(monatliche_rate)}")
+            with ausg2:
+                st.metric("Nebenkosten (Haus)", f"€{format_eur(monthly_nebenkosten_new)}")
+            with ausg3:
+                st.metric("Privatkosten", f"€{format_eur(monthly_nebenkosten_privat)}")
+
+            st.markdown(f'<div class="calculated-result" style="margin-top:15px; font-size: 1.5rem;">Gesamte monatliche Belastung: <b>€{format_eur(total_monthly_burden)}</b></div>', unsafe_allow_html=True)
+
+            st.markdown("---")
+            st.write("Vergleich der monatlichen Ausgaben mit Ihrem Einkommen.")
+
+            net_monthly_cash_flow = total_monthly_income - total_monthly_burden
+            net_yearly_cash_flow = net_monthly_cash_flow * 12
+
+            box_class = "cashflow-positive" if net_monthly_cash_flow >= 0 else "cashflow-negative"
+            st.markdown(f"""
+            <div class="cashflow-box {box_class}">
+                <div class="cashflow-label">Netto Cashflow (Frei verfügbarer Puffer)</div>
+                <div class="cashflow-value">€{format_eur(net_monthly_cash_flow)}</div>
+            </div>
+            """, unsafe_allow_html=True)
+            st.write(f"**Jährlicher Netto Cashflow:** €{format_eur(net_yearly_cash_flow)}")
 
 with tab_erklaerung:
     st.header("📖 Funktionsweise & Berechnungen")
