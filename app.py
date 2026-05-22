@@ -571,46 +571,6 @@ with tab_verkauf:
             with r2c4:
                 st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Benötigter Kreditbetrag: <b>€{format_eur(vk_loan_amount)}</b></div>', unsafe_allow_html=True)
 
-    with row1_vk2:
-        with st.container(border=True):
-            st.header("Laufende Nebenkosten (Jahr)")
-
-            nk1c1, nk1c2, nk1c3, nk1c4 = st.columns(4)
-            with nk1c1:
-                vk_nk_versicherung_new = st.number_input("Wohngebäudevers.", value=1100, step=None, key="vk_nk_vers_new")
-            with nk1c2:
-                vk_nk_grundsteuer_new = st.number_input("Grundsteuer", value=600, step=None, key="vk_nk_gs_new")
-            with nk1c3:
-                vk_nk_muell_new = st.number_input("Müll/Straßenreinigung", value=200, step=None, key="vk_nk_muell_new")
-            with nk1c4:
-                vk_nk_wasser_new = st.number_input("Wasser/Kanal/Niederschlag", value=525, step=None, key="vk_nk_wasser_new", help="Wasser, Kanalgebühren & Niederschlagswasser")
-
-            nk2c1, nk2c2, nk2c3, nk2c4 = st.columns(4)
-            with nk2c1:
-                vk_nk_schornstein_new = st.number_input("Schornsteinfeger/Heizung", value=300, step=None, key="vk_nk_schorn_new")
-            with nk2c2:
-                vk_nk_verbrauch_new = st.number_input("Verbrauchskosten", value=4020, step=None, key="vk_nk_verbr_new")
-            with nk2c3:
-                pass
-            with nk2c4:
-                pass
-
-            vk_yearly_nebenkosten_new = vk_nk_versicherung_new + vk_nk_grundsteuer_new + vk_nk_muell_new + vk_nk_wasser_new + vk_nk_schornstein_new + vk_nk_verbrauch_new
-            vk_monthly_nebenkosten_new = vk_yearly_nebenkosten_new / 12
-
-            nk3c1, nk3c2, nk3c3, nk3c4 = st.columns(4)
-            with nk3c1:
-                st.markdown(f'<div class="calculated-result">Jährliche Nebenkosten: <b>€{format_eur(vk_yearly_nebenkosten_new)}</b></div>', unsafe_allow_html=True)
-            with nk3c2:
-                st.markdown(f'<div class="calculated-result">Monatliche Nebenkosten: <b>€{format_eur(vk_monthly_nebenkosten_new)}</b></div>', unsafe_allow_html=True)
-            with nk3c3:
-                pass
-            with nk3c4:
-                pass
-
-    row2_vk1, row2_vk2 = st.columns(2)
-
-    with row2_vk1:
         with st.container(border=True):
             st.header("Hypotheken-Details")
             h4c1, h4c2, h4c3, h4c4 = st.columns(4)
@@ -664,15 +624,72 @@ with tab_verkauf:
                 time_str = "0 Jahre, 0 Monate"
                 restschuld_nach_bindung = 0.0
 
-            st.markdown(f'<div class="calculated-result" style="margin-top: 10px; font-size: 1.2rem;">Monatliche Rate: <b>€{format_eur(vk_actual_monthly_payment)}</b></div>', unsafe_allow_html=True)
-
             h5c1, h5c2, h5c3 = st.columns(3)
             with h5c1:
                 st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Gesamtlaufzeit: <b>{time_str}</b></div>', unsafe_allow_html=True)
             with h5c2:
-                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Restschuld nach {vk_zinsbindung} Jahren: <b>€{format_eur(restschuld_nach_bindung)}</b></div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Monatliche Rate: <b>€{format_eur(vk_actual_monthly_payment)}</b></div>', unsafe_allow_html=True)
             with h5c3:
+                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Restschuld nach {vk_zinsbindung} Jahren: <b>€{format_eur(restschuld_nach_bindung)}</b></div>', unsafe_allow_html=True)
+
+        with st.container(border=True):
+            st.header("Laufende Nebenkosten (Jahr)")
+
+            nk1c1, nk1c2, nk1c3, nk1c4 = st.columns(4)
+            with nk1c1:
+                vk_nk_versicherung_new = st.number_input("Wohngebäudevers.", value=1100, step=None, key="vk_nk_vers_new")
+            with nk1c2:
+                vk_nk_grundsteuer_new = st.number_input("Grundsteuer", value=600, step=None, key="vk_nk_gs_new")
+            with nk1c3:
+                vk_nk_muell_new = st.number_input("Müll/Straßenreinigung", value=200, step=None, key="vk_nk_muell_new")
+            with nk1c4:
+                vk_nk_wasser_new = st.number_input("Wasser/Kanal/Niederschlag", value=525, step=None, key="vk_nk_wasser_new", help="Wasser, Kanalgebühren & Niederschlagswasser")
+
+            nk2c1, nk2c2, nk2c3, nk2c4 = st.columns(4)
+            with nk2c1:
+                vk_nk_schornstein_new = st.number_input("Schornsteinfeger/Heizung", value=300, step=None, key="vk_nk_schorn_new")
+            with nk2c2:
+                vk_nk_verbrauch_new = st.number_input("Verbrauchskosten", value=4020, step=None, key="vk_nk_verbr_new")
+            with nk2c3:
                 pass
+            with nk2c4:
+                pass
+
+            vk_yearly_nebenkosten_new = vk_nk_versicherung_new + vk_nk_grundsteuer_new + vk_nk_muell_new + vk_nk_wasser_new + vk_nk_schornstein_new + vk_nk_verbrauch_new
+            vk_monthly_nebenkosten_new = vk_yearly_nebenkosten_new / 12
+
+            nk3c1, nk3c2, nk3c3, nk3c4 = st.columns(4)
+            with nk3c1:
+                st.markdown(f'<div class="calculated-result">Jährliche Nebenkosten: <b>€{format_eur(vk_yearly_nebenkosten_new)}</b></div>', unsafe_allow_html=True)
+            with nk3c2:
+                st.markdown(f'<div class="calculated-result">Monatliche Nebenkosten: <b>€{format_eur(vk_monthly_nebenkosten_new)}</b></div>', unsafe_allow_html=True)
+            with nk3c3:
+                pass
+            with nk3c4:
+                pass
+
+        with st.container(border=True):
+            st.header("Bank-Risikoprüfung 🏦")
+
+            vk_bank_risiko_placeholder = st.empty()
+
+    with row1_vk2:
+        with st.container(border=True):
+            st.header("Einkommen")
+            st.write("Berechnung des Netto-Gehalts für Steuerklasse 1 in Hessen ohne Kirchensteuer.")
+            r5c1, r5c2, r5c3 = st.columns(3)
+            with r5c1:
+                vk_brutto_jahr = st.number_input("Jährliches Bruttogehalt (€)", value=55380, step=None, key="vk_brutto")
+            with r5c2:
+                vk_kv_satz = st.number_input("Gesetzlicher Krankenkassenbeitrag (%)", value=16.8, step=None, format="%.1f", key="vk_kv")
+            with r5c3:
+                vk_other_income = st.number_input("Andere Einkommensquellen (Netto/Jahr €)", value=0, step=None, key="vk_other")
+
+            vk_job_salary_net = berechne_netto(vk_brutto_jahr, vk_kv_satz)
+
+            st.markdown(f"**Berechnetes monatliches Netto-Gehalt:** €{format_eur(vk_job_salary_net)}")
+
+            vk_total_monthly_income = vk_job_salary_net + (vk_other_income / 12)
 
         with st.container(border=True):
             st.header("Laufende Kosten (Privat, mtl.)")
@@ -703,29 +720,6 @@ with tab_verkauf:
                 pass
 
         with st.container(border=True):
-            st.header("Bank-Risikoprüfung 🏦")
-
-            vk_bank_risiko_placeholder = st.empty()
-
-    with row2_vk2:
-        with st.container(border=True):
-            st.header("Einkommen")
-            st.write("Berechnung des Netto-Gehalts für Steuerklasse 1 in Hessen ohne Kirchensteuer.")
-            r5c1, r5c2, r5c3 = st.columns(3)
-            with r5c1:
-                vk_brutto_jahr = st.number_input("Jährliches Bruttogehalt (€)", value=55380, step=None, key="vk_brutto")
-            with r5c2:
-                vk_kv_satz = st.number_input("Gesetzlicher Krankenkassenbeitrag (%)", value=16.8, step=None, format="%.1f", key="vk_kv")
-            with r5c3:
-                vk_other_income = st.number_input("Andere Einkommensquellen (Netto/Jahr €)", value=0, step=None, key="vk_other")
-
-            vk_job_salary_net = berechne_netto(vk_brutto_jahr, vk_kv_satz)
-
-            st.markdown(f"**Berechnetes monatliches Netto-Gehalt:** €{format_eur(vk_job_salary_net)}")
-
-            vk_total_monthly_income = vk_job_salary_net + (vk_other_income / 12)
-
-        with st.container(border=True):
             st.header("Finanzielle Analyse 💰")
 
             vk_total_monthly_burden = vk_actual_monthly_payment + vk_monthly_nebenkosten_new + vk_monthly_nebenkosten_privat
@@ -741,11 +735,6 @@ with tab_verkauf:
                 st.metric("Privatkosten", f"€{format_eur(vk_monthly_nebenkosten_privat)}")
 
             st.markdown(f'<div class="calculated-result" style="margin-top:15px; font-size: 1.5rem;">Gesamte monatliche Belastung: <b>€{format_eur(vk_total_monthly_burden)}</b></div>', unsafe_allow_html=True)
-
-            st.markdown("---")
-            st.write("Vergleich der Ausgaben mit Ihrem Einkommen.")
-
-            st.subheader("Szenario Verkauf")
 
             vk_net_monthly_cash_flow = vk_total_monthly_income - vk_total_monthly_burden
             vk_net_yearly_cash_flow = vk_net_monthly_cash_flow * 12
@@ -796,34 +785,38 @@ with tab_erklaerung:
     st.header("📖 Funktionsweise & Berechnungen")
     st.markdown("Diese Seite erklärt detailliert, wie der Hausprojekt-Rechner funktioniert, welche Annahmen getroffen werden und wie sich die Endergebnisse zusammensetzen.")
 
-    st.markdown("---")
-    st.subheader("Szenario Vermietung")
-    st.markdown("""
-### 1. Das Neue Haus (Kauf)
+    erk_col1, erk_col2 = st.columns(2)
+
+    with erk_col1:
+        with st.container(border=True):
+            st.subheader("Szenario Vermietung")
+            st.markdown("Im Reiter **Szenario Vermietung** vergleichen wir die Option, das alte Haus zu behalten und zu vermieten, während Sie ein neues Haus kaufen.")
+            st.markdown("""
+### Das Neue Haus (Kauf)
 Hier wird der finanzielle Grundstein für Ihr neues Eigenheim gelegt:
 - **Benötigtes Kapital:** Summiert den Kaufpreis, die prozentualen Kaufnebenkosten (wie Grunderwerbsteuer, Notar, Grundbuch), die Reparaturen vor dem Einzug ins neue Haus **sowie** die Reparaturen, die vor der Vermietung des alten Hauses anfallen.
 - **Benötigter Kreditbetrag:** Dies ist das benötigte Kapital abzüglich Ihres eingesetzten Eigenkapitals. Dieser Betrag wird durch die Hypothek finanziert.
 - **Erforderliche monatliche Rate (Kredit):** Berechnet nach der in Deutschland üblichen Methode für Annuitätenkredite. Die Rate ergibt sich aus dem gewünschten anfänglichen Tilgungssatz und dem Zinssatz: `(Kreditbetrag * (Zinssatz + Tilgungssatz)) / 12`.
 
-### 2. Das Alte Haus (Vermietung)
+### Das Alte Haus (Vermietung)
 Hier erfassen Sie die wirtschaftlichen Eckdaten Ihrer bestehenden Immobilie:
 - **Mieteinnahmen & Mietausfallwagnis:** Die monatliche Kaltmiete wird um das von Ihnen angegebene Mietausfallwagnis reduziert. Dies simuliert realistische Einnahmeverluste durch Leerstand oder Mieterwechsel.
 - **Reparaturen vor Vermietung:** Diese Kosten werden direkt auf den neuen Kreditbetrag aufgeschlagen, da sie in der Regel zeitnah zum Auszug anfallen. *(Tipp: Diese Renovierungskosten können in der Realität oft als sofort abziehbarer Erhaltungsaufwand von der Steuer abgesetzt werden und so in den ersten Jahren zu hohen Steuerrückerstattungen führen).*
 - **Gebäudeabschreibung (AfA) & Steuern:** Mieteinnahmen sind steuerpflichtig. Die Steuerlast berechnet sich aus der realen Miete (Miete abzgl. Ausfallwagnis) abzüglich der Gebäudeabschreibung (AfA). Da die AfA eine reine Steuervergünstigung ist, verlässt das Geld nicht Ihr Konto.
 - **Netto-Mietüberschuss:** Das ist der tatsächliche Betrag, der auf Ihrem Konto landet: Die reale Miete abzüglich der berechneten Steuern. Er fließt positiv in Ihren Cashflow ein.
 
-### 3. Laufende Nebenkosten
+### Laufende Nebenkosten
 Für beide Häuser erfassen Sie hier die jährlichen Betriebskosten.
 - **Neues Haus:** Diese Kosten tragen Sie in voller Höhe selbst. (Hinweis: Als Selbstnutzer benötigen Sie hier keine spezielle Grundbesitzerhaftpflicht, da dies meist über die private Haftpflicht abgedeckt ist).
 - **Altes Haus:** Bei Vermietung (Szenario A) werden die hier angegebenen umlagefähigen Kosten über die Nebenkostenabrechnung vom Mieter getragen und beeinflussen Ihren Cashflow nicht negativ. Steht das Haus jedoch leer (Szenario B), fallen *alle* Kosten (inklusive der Haus- und Grundbesitzerhaftpflicht) auf Sie zurück.
 
-### 4. Einkommen & Privatkosten
+### Einkommen & Privatkosten
 Damit der Cashflow realistisch ist, betrachten wir Ihr verfügbares Budget:
 - **Netto-Gehalt:** Das monatliche Netto-Gehalt wird basierend auf Ihrem jährlichen Bruttogehalt und dem gesetzlichen Krankenkassenbeitrag automatisch geschätzt (Annahme: Bundesland Hessen, Steuerklasse 1, keine Kirchensteuer).
 - Dieses Netto-Gehalt sowie **weitere Einkommensquellen** bilden die Einnahmenseite.
 - Davon abgezogen werden die **Laufenden Kosten (Privat)** wie Nahrungsmittel, Versicherungen und Sonstiges.
 
-### 5. Finanzielle Analyse (Szenarien)
+### Finanzielle Analyse (Szenarien)
 Die abschließende Analyse führt alle Ausgaben und Einnahmen zusammen, um Ihren finalen Netto-Cashflow zu ermitteln.
 
 Die **Gesamte monatliche Belastung** setzt sich zusammen aus der Kreditrate für das neue Haus, den Nebenkosten des neuen Hauses und Ihren privaten Lebenshaltungskosten.
@@ -836,21 +829,38 @@ Die **Gesamte monatliche Belastung** setzt sich zusammen aus der Kreditrate für
 
 Sollte der Cashflow-Wert rot sein, übersteigen Ihre monatlichen Ausgaben Ihre Einnahmen.
 
-### 6. Bank-Risikoprüfung
+### Bank-Risikoprüfung
 Hier sehen Sie die wichtigsten Kennzahlen, die Banken intern zur Kreditvergabe nutzen:
 - **Beleihungsauslauf (LTV):** Prozentualer Anteil des Kaufpreises, der finanziert wird. (< 60% = Bestzinsen, > 80% = Risiko).
 - **Wohnkostenquote:** Zeigt, wie viel Prozent Ihres Nettoeinkommens für die monatliche Kreditrate aufgewendet werden muss. (Sollte unter 30-40% liegen).
 - **Bewirtschaftungspauschale:** Pauschaler Abzug der Bank für Nebenkosten (oft 2,50 € pro m²).
 - **Zins- und Tilgungsanteil (1. Monat):** Zeigt auf einen Blick, wie viel Ihrer ersten Rate in Ihren Vermögensaufbau (Tilgung) und wie viel an die Bank (Zinsen) fließt.
-    """)
+            """)
 
-    st.markdown("---")
-    st.subheader("Szenario Verkauf")
-    st.markdown("""
-Im Reiter **Szenario Verkauf** vergleichen wir die Option, das alte Haus nicht zu vermieten, sondern abzustoßen, um den Erlös als Eigenkapital für das neue Haus zu nutzen.
-* **1. Kapitalbedarf:** Bündelt Kaufpreis, Nebenkosten und Reparaturen & Umzug des neuen Hauses.
-* **2. Eigenkapital:** Setzt sich aus dem erwarteten Netto-Erlös Ihres alten Hauses sowie weiteren Ersparnissen zusammen.
-* **3. Kreditkosten:** Da das Eigenkapital deutlich höher ist, fällt die benötigte Kreditsumme geringer aus. Die Rate wird klassisch mit Zinssatz und Tilgung berechnet. Hier sehen Sie auch die verbleibende Restschuld am Ende der Zinsbindung.
-* **4. Haushaltsrechnung:** Prüft, ob Ihr Haushaltsnettoeinkommen (basierend auf Ihrem Bruttogehalt) ausreicht, um die neue Kreditrate, die kalkulatorische Bewirtschaftung des neuen Hauses (2,50 € pro m²) und Ihre regulären Lebenshaltungskosten zu decken.
-* **5. Bank-Risikoprüfung:** Zeigt LTV, Wohnkostenquote und den exakten Tilgungs-/Zinsanteil der Rate im ersten Monat nach finanzmathematischen Standards.
-    """)
+    with erk_col2:
+        with st.container(border=True):
+            st.subheader("Szenario Verkauf")
+            st.markdown("Im Reiter **Szenario Verkauf** vergleichen wir die Option, das alte Haus nicht zu vermieten, sondern abzustoßen, um den Erlös als Eigenkapital für das neue Haus zu nutzen.")
+            st.markdown("""
+### Kapitalbedarf
+Bündelt Kaufpreis, Nebenkosten und Reparaturen & Umzug des neuen Hauses.
+
+### Eigenkapital
+Setzt sich aus dem erwarteten Netto-Erlös Ihres alten Hauses sowie weiteren Ersparnissen zusammen.
+
+### Kreditkosten
+Da das Eigenkapital deutlich höher ist, fällt die benötigte Kreditsumme geringer aus. Die Rate wird klassisch mit Zinssatz und Tilgung berechnet. Hier sehen Sie auch die verbleibende Restschuld am Ende der Zinsbindung.
+
+### Laufende Nebenkosten
+Da das alte Haus verkauft wird, fallen Nebenkosten nur noch für das neue Haus an. Diese tragen Sie in voller Höhe selbst.
+
+### Einkommen & Privatkosten
+Wie im Vermietungsszenario wird Ihr monatliches Netto-Gehalt automatisch geschätzt und Ihre laufenden privaten Kosten (Lebensmittel, Auto, etc.) abgezogen.
+
+### Finanzielle Analyse
+Prüft, ob Ihr Haushaltsnettoeinkommen ausreicht, um die neue Kreditrate, die Nebenkosten des neuen Hauses und Ihre regulären Lebenshaltungskosten zu decken.
+Sollte der Cashflow-Wert rot sein, übersteigen Ihre monatlichen Ausgaben Ihre Einnahmen.
+
+### Bank-Risikoprüfung
+Zeigt LTV, Wohnkostenquote und den exakten Tilgungs-/Zinsanteil der Rate im ersten Monat nach finanzmathematischen Standards.
+            """)
