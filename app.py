@@ -208,16 +208,13 @@ with tab_vermietung:
             total_capital_needed = purchase_price + closing_costs_eur + renovations_new + renovations_old
             loan_amount = total_capital_needed - down_payment
 
-            r2c1, r2c2, r2c3, r2c4 = st.columns(4)
+            r2c1, r2c2, r2c3 = st.columns(3)
             with r2c1:
-                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Benötigtes Kapital: <b>€{format_eur(total_capital_needed)}</b></div>', unsafe_allow_html=True)
-                st.markdown(f'<div class="calculated-result">Benötigter Kreditbetrag: <b>€{format_eur(loan_amount)}</b></div>', unsafe_allow_html=True)
-            with r2c2:
                 st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Kaufnebenkosten: <b>€{format_eur(closing_costs_eur)}</b></div>', unsafe_allow_html=True)
+            with r2c2:
+                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Benötigtes Kapital: <b>€{format_eur(total_capital_needed)}</b></div>', unsafe_allow_html=True)
             with r2c3:
-                pass
-            with r2c4:
-                pass
+                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Benötigter Kreditbetrag: <b>€{format_eur(loan_amount)}</b></div>', unsafe_allow_html=True)
 
 
     # --- ROW 2: Laufende Nebenkosten ---
@@ -392,7 +389,7 @@ with tab_vermietung:
             st.write("Berechnung des Netto-Gehalts für Steuerklasse 1 in Hessen ohne Kirchensteuer.")
             r5c1, r5c2, r5c3 = st.columns(3)
             with r5c1:
-                brutto_jahr = st.number_input("Jährliches Bruttogehalt (€)", value=55000, step=None)
+                brutto_jahr = st.number_input("Jährliches Bruttogehalt (€)", value=55380, step=None)
             with r5c2:
                 kv_satz = st.number_input("Gesetzlicher Krankenkassenbeitrag (%)", value=16.8, step=None, format="%.1f")
             with r5c3:
@@ -463,17 +460,19 @@ with tab_vermietung:
             zins_anteil_1m = loan_amount * (interest_rate / 100 / 12)
             tilgung_anteil_1m = actual_monthly_payment - zins_anteil_1m
 
-            b1, b2 = st.columns(2)
+            b1, b2, b3, b4 = st.columns(4)
             help_svg = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor" xmlns="http://www.w3.org/2000/svg" color="inherit" style="width: 1rem; height: 1rem; margin-left: 4px; vertical-align: middle; color: rgba(49, 51, 63, 0.6);"><path fill="none" d="M0 0h24v24H0V0z"></path><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"></path></svg>'
 
             with b1:
                 st.markdown(f"**Beleihungsauslauf (LTV)** <span title='Zeigt, wie viel Prozent des eigentlichen Hauswertes die Bank finanzieren muss. Unter 80 % ist gut, unter 60 % gibt es Bestzinsen.' style='cursor: help;'>{help_svg}</span><br><span style='color:{ltv_color}; font-weight:bold;'>{format_eur(ltv_pct)} %</span>", unsafe_allow_html=True)
-                st.markdown(f"**Wohnkostenquote** <span title='Prüft, wie viel Prozent unseres monatlichen Haushaltsnettoeinkommens für die Rate draufgehen. Das darf für die Bank nicht über 40 % rutschen.' style='cursor: help;'>{help_svg}</span><br><span style='color:{wkq_color}; font-weight:bold;'>{format_eur(wkq_pct)} %</span>", unsafe_allow_html=True)
             with b2:
+                st.markdown(f"**Wohnkostenquote** <span title='Prüft, wie viel Prozent unseres monatlichen Haushaltsnettoeinkommens für die Rate draufgehen. Das darf für die Bank nicht über 40 % rutschen.' style='cursor: help;'>{help_svg}</span><br><span style='color:{wkq_color}; font-weight:bold;'>{format_eur(wkq_pct)} %</span>", unsafe_allow_html=True)
+            with b3:
                 st.markdown(f"**Bewirtschaftungspauschale** <span title='Das ist der Puffer, den die Bank in ihrer Haushaltsrechnung für Heizung, Instandhaltung und Müll abzieht. Sie rechnet meist mit 2,50 € pro Quadratmeter im Monat.' style='cursor: help;'>{help_svg}</span><br>€{format_eur(bewirtschaftung_pauschale)}", unsafe_allow_html=True)
-                st.markdown(f"**1. Monat Zins / Tilgung** <span title='Damit wir direkt sehen, wie viel von unserer hohen Rate im ersten Monat in den eigenen Vermögensaufbau (Tilgung) und wie viel an die Bank (Zins) fließt.' style='cursor: help;'>{help_svg}</span><br>€{format_eur(zins_anteil_1m)} / €{format_eur(tilgung_anteil_1m)}", unsafe_allow_html=True)
+            with b4:
+                st.markdown(f"**1. Monat Zins/Tilgung** <span title='Damit wir direkt sehen, wie viel von unserer hohen Rate im ersten Monat in den eigenen Vermögensaufbau (Tilgung) und wie viel an die Bank (Zins) fließt.' style='cursor: help;'>{help_svg}</span><br>€{format_eur(zins_anteil_1m)} / €{format_eur(tilgung_anteil_1m)}", unsafe_allow_html=True)
 
-            st.markdown("<div style='font-size: 0.85rem; color: #666; margin-top: 15px;'><i>Hinweis: Diese Prüfung nutzt bankenübliche Pauschalen (z.B. für Bewirtschaftung) und zieht Ihre individuellen Nebenkosten (die Sie oben im Block 'Laufende Nebenkosten' detailliert erfasst haben) <b>nicht</b> direkt heran. Banken rechnen intern mit einem festen Puffer pro Quadratmeter, um Risiken abzusichern.</i></div>", unsafe_allow_html=True)
+            st.markdown("<div style='font-size: 0.85rem; color: #666; margin-top: 15px;'><i>Hinweis: Diese Prüfung nutzt bankenübliche Pauschalen (z.B. für Bewirtschaftung) und zieht Ihre individuellen Nebenkosten (die Sie oben im Block 'Laufende Nebenkosten' detailliert erfasst haben) <b>nicht</b> direkt heran.</i></div>", unsafe_allow_html=True)
 
         st.markdown("<div style='margin-bottom: 30px;'></div>", unsafe_allow_html=True)
 
@@ -564,15 +563,13 @@ with tab_verkauf:
 
             r2c1, r2c2, r2c3, r2c4 = st.columns(4)
             with r2c1:
-                st.markdown(f"<div class='calculated-result' style='margin-top: 10px;'>Benötigtes Kapital: <b>€{format_eur(vk_total_capital_needed)}</b></div>", unsafe_allow_html=True)
-                st.markdown(f"<div class='calculated-result'>Gesamtes Eigenkapital: <b>€{format_eur(vk_gesamtes_eigenkapital)}</b></div>", unsafe_allow_html=True)
-                st.markdown(f"<div class='calculated-result'>Benötigter Kreditbetrag: <b>€{format_eur(vk_loan_amount)}</b></div>", unsafe_allow_html=True)
+                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Kaufnebenkosten: <b>€{format_eur(vk_closing_costs_eur)}</b></div>', unsafe_allow_html=True)
             with r2c2:
-                st.markdown(f"<div class='calculated-result' style='margin-top: 10px;'>Kaufnebenkosten: <b>€{format_eur(vk_closing_costs_eur)}</b></div>", unsafe_allow_html=True)
+                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Gesamtes Eigenkapital: <b>€{format_eur(vk_gesamtes_eigenkapital)}</b></div>', unsafe_allow_html=True)
             with r2c3:
-                pass
+                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Benötigtes Kapital: <b>€{format_eur(vk_total_capital_needed)}</b></div>', unsafe_allow_html=True)
             with r2c4:
-                pass
+                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Benötigter Kreditbetrag: <b>€{format_eur(vk_loan_amount)}</b></div>', unsafe_allow_html=True)
 
     with row1_vk2:
         with st.container(border=True):
@@ -603,9 +600,9 @@ with tab_verkauf:
 
             nk3c1, nk3c2, nk3c3, nk3c4 = st.columns(4)
             with nk3c1:
-                st.markdown(f"<div class='calculated-result'>Jährliche Nebenkosten: <b>€{format_eur(vk_yearly_nebenkosten_new)}</b></div>", unsafe_allow_html=True)
+                st.markdown(f'<div class="calculated-result">Jährliche Nebenkosten: <b>€{format_eur(vk_yearly_nebenkosten_new)}</b></div>', unsafe_allow_html=True)
             with nk3c2:
-                st.markdown(f"<div class='calculated-result'>Monatliche Nebenkosten: <b>€{format_eur(vk_monthly_nebenkosten_new)}</b></div>", unsafe_allow_html=True)
+                st.markdown(f'<div class="calculated-result">Monatliche Nebenkosten: <b>€{format_eur(vk_monthly_nebenkosten_new)}</b></div>', unsafe_allow_html=True)
             with nk3c3:
                 pass
             with nk3c4:
@@ -667,38 +664,15 @@ with tab_verkauf:
                 time_str = "0 Jahre, 0 Monate"
                 restschuld_nach_bindung = 0.0
 
-            st.markdown(f"<div class='calculated-result' style='margin-top: 10px; font-size: 1.2rem;'>Monatliche Rate: <b>€{format_eur(vk_actual_monthly_payment)}</b></div>", unsafe_allow_html=True)
+            st.markdown(f'<div class="calculated-result" style="margin-top: 10px; font-size: 1.2rem;">Monatliche Rate: <b>€{format_eur(vk_actual_monthly_payment)}</b></div>', unsafe_allow_html=True)
 
             h5c1, h5c2, h5c3 = st.columns(3)
             with h5c1:
-                st.markdown(f"<div class='calculated-result' style='margin-top: 10px;'>Gesamtlaufzeit: <b>{time_str}</b></div>", unsafe_allow_html=True)
+                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Gesamtlaufzeit: <b>{time_str}</b></div>', unsafe_allow_html=True)
             with h5c2:
-                st.markdown(f"<div class='calculated-result' style='margin-top: 10px;'>Restschuld nach {vk_zinsbindung} Jahren: <b>€{format_eur(restschuld_nach_bindung)}</b></div>", unsafe_allow_html=True)
+                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Restschuld nach {vk_zinsbindung} Jahren: <b>€{format_eur(restschuld_nach_bindung)}</b></div>', unsafe_allow_html=True)
             with h5c3:
                 pass
-
-        with st.container(border=True):
-            st.header("Bank-Risikoprüfung 🏦")
-
-            vk_bank_risiko_placeholder = st.empty()
-
-    with row2_vk2:
-        with st.container(border=True):
-            st.header("Einkommen")
-            st.write("Berechnung des Netto-Gehalts für Steuerklasse 1 in Hessen ohne Kirchensteuer.")
-            r5c1, r5c2, r5c3 = st.columns(3)
-            with r5c1:
-                vk_brutto_jahr = st.number_input("Jährliches Bruttogehalt (€)", value=55000, step=None, key="vk_brutto")
-            with r5c2:
-                vk_kv_satz = st.number_input("Gesetzlicher Krankenkassenbeitrag (%)", value=16.8, step=None, format="%.1f", key="vk_kv")
-            with r5c3:
-                vk_other_income = st.number_input("Andere Einkommensquellen (Netto/Jahr €)", value=0, step=None, key="vk_other")
-
-            vk_job_salary_net = berechne_netto(vk_brutto_jahr, vk_kv_satz)
-
-            st.markdown(f"**Berechnetes monatliches Netto-Gehalt:** €{format_eur(vk_job_salary_net)}")
-
-            vk_total_monthly_income = vk_job_salary_net + (vk_other_income / 12)
 
         with st.container(border=True):
             st.header("Laufende Kosten (Privat, mtl.)")
@@ -722,11 +696,34 @@ with tab_verkauf:
 
             pr3c1, pr3c2, pr3c3 = st.columns(3)
             with pr3c1:
-                st.markdown(f"<div class='calculated-result' style='margin-top: 10px;'>Jährliche Privatkosten: <b>€{format_eur(vk_monthly_nebenkosten_privat * 12)}</b></div>", unsafe_allow_html=True)
+                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Jährliche Privatkosten: <b>€{format_eur(vk_monthly_nebenkosten_privat * 12)}</b></div>', unsafe_allow_html=True)
             with pr3c2:
-                st.markdown(f"<div class='calculated-result' style='margin-top: 10px;'>Monatliche Privatkosten: <b>€{format_eur(vk_monthly_nebenkosten_privat)}</b></div>", unsafe_allow_html=True)
+                st.markdown(f'<div class="calculated-result" style="margin-top: 10px;">Monatliche Privatkosten: <b>€{format_eur(vk_monthly_nebenkosten_privat)}</b></div>', unsafe_allow_html=True)
             with pr3c3:
                 pass
+
+        with st.container(border=True):
+            st.header("Bank-Risikoprüfung 🏦")
+
+            vk_bank_risiko_placeholder = st.empty()
+
+    with row2_vk2:
+        with st.container(border=True):
+            st.header("Einkommen")
+            st.write("Berechnung des Netto-Gehalts für Steuerklasse 1 in Hessen ohne Kirchensteuer.")
+            r5c1, r5c2, r5c3 = st.columns(3)
+            with r5c1:
+                vk_brutto_jahr = st.number_input("Jährliches Bruttogehalt (€)", value=55380, step=None, key="vk_brutto")
+            with r5c2:
+                vk_kv_satz = st.number_input("Gesetzlicher Krankenkassenbeitrag (%)", value=16.8, step=None, format="%.1f", key="vk_kv")
+            with r5c3:
+                vk_other_income = st.number_input("Andere Einkommensquellen (Netto/Jahr €)", value=0, step=None, key="vk_other")
+
+            vk_job_salary_net = berechne_netto(vk_brutto_jahr, vk_kv_satz)
+
+            st.markdown(f"**Berechnetes monatliches Netto-Gehalt:** €{format_eur(vk_job_salary_net)}")
+
+            vk_total_monthly_income = vk_job_salary_net + (vk_other_income / 12)
 
         with st.container(border=True):
             st.header("Finanzielle Analyse 💰")
@@ -743,7 +740,7 @@ with tab_verkauf:
             with ausg3:
                 st.metric("Privatkosten", f"€{format_eur(vk_monthly_nebenkosten_privat)}")
 
-            st.markdown(f"<div class='calculated-result' style='margin-top:15px; font-size: 1.5rem;'>Gesamte monatliche Belastung: <b>€{format_eur(vk_total_monthly_burden)}</b></div>", unsafe_allow_html=True)
+            st.markdown(f'<div class="calculated-result" style="margin-top:15px; font-size: 1.5rem;">Gesamte monatliche Belastung: <b>€{format_eur(vk_total_monthly_burden)}</b></div>', unsafe_allow_html=True)
 
             st.markdown("---")
             st.write("Vergleich der Ausgaben mit Ihrem Einkommen.")
@@ -781,17 +778,19 @@ with tab_verkauf:
         vk_zins_anteil_1m = vk_loan_amount * (vk_interest_rate / 100 / 12)
         vk_tilgung_anteil_1m = vk_actual_monthly_payment - vk_zins_anteil_1m
 
-        b1, b2 = st.columns(2)
+        b1, b2, b3, b4 = st.columns(4)
         help_svg = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor" xmlns="http://www.w3.org/2000/svg" color="inherit" style="width: 1rem; height: 1rem; margin-left: 4px; vertical-align: middle; color: rgba(49, 51, 63, 0.6);"><path fill="none" d="M0 0h24v24H0V0z"></path><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"></path></svg>'
 
         with b1:
             st.markdown(f"**Beleihungsauslauf (LTV)** <span title='Zeigt, wie viel Prozent des eigentlichen Hauswertes die Bank finanzieren muss. Unter 80 % ist gut, unter 60 % gibt es Bestzinsen.' style='cursor: help;'>{help_svg}</span><br><span style='color:{vk_ltv_color}; font-weight:bold;'>{format_eur(vk_ltv_pct)} %</span>", unsafe_allow_html=True)
-            st.markdown(f"**Wohnkostenquote** <span title='Prüft, wie viel Prozent unseres monatlichen Haushaltsnettoeinkommens für die Rate draufgehen. Das darf für die Bank nicht über 40 % rutschen.' style='cursor: help;'>{help_svg}</span><br><span style='color:{vk_wkq_color}; font-weight:bold;'>{format_eur(vk_wkq_pct)} %</span>", unsafe_allow_html=True)
         with b2:
+            st.markdown(f"**Wohnkostenquote** <span title='Prüft, wie viel Prozent unseres monatlichen Haushaltsnettoeinkommens für die Rate draufgehen. Das darf für die Bank nicht über 40 % rutschen.' style='cursor: help;'>{help_svg}</span><br><span style='color:{vk_wkq_color}; font-weight:bold;'>{format_eur(vk_wkq_pct)} %</span>", unsafe_allow_html=True)
+        with b3:
             st.markdown(f"**Bewirtschaftungspauschale** <span title='Das ist der Puffer, den die Bank in ihrer Haushaltsrechnung für Heizung, Instandhaltung und Müll abzieht. Sie rechnet meist mit 2,50 € pro Quadratmeter im Monat.' style='cursor: help;'>{help_svg}</span><br>€{format_eur(vk_bewirtschaftung_pauschale)}", unsafe_allow_html=True)
-            st.markdown(f"**1. Monat Zins / Tilgung** <span title='Damit wir direkt sehen, wie viel von unserer hohen Rate im ersten Monat in den eigenen Vermögensaufbau (Tilgung) und wie viel an die Bank (Zins) fließt.' style='cursor: help;'>{help_svg}</span><br>€{format_eur(vk_zins_anteil_1m)} / €{format_eur(vk_tilgung_anteil_1m)}", unsafe_allow_html=True)
+        with b4:
+            st.markdown(f"**1. Monat Zins/Tilgung** <span title='Damit wir direkt sehen, wie viel von unserer hohen Rate im ersten Monat in den eigenen Vermögensaufbau (Tilgung) und wie viel an die Bank (Zins) fließt.' style='cursor: help;'>{help_svg}</span><br>€{format_eur(vk_zins_anteil_1m)} / €{format_eur(vk_tilgung_anteil_1m)}", unsafe_allow_html=True)
 
-        st.markdown("<div style='font-size: 0.85rem; color: #666; margin-top: 15px;'><i>Hinweis: Diese Prüfung nutzt bankenübliche Pauschalen (z.B. für Bewirtschaftung) und zieht Ihre individuellen Nebenkosten (die Sie oben im Block 'Laufende Nebenkosten' detailliert erfasst haben) <b>nicht</b> direkt heran. Banken rechnen intern mit einem festen Puffer pro Quadratmeter, um Risiken abzusichern.</i></div>", unsafe_allow_html=True)
+        st.markdown("<div style='font-size: 0.85rem; color: #666; margin-top: 15px;'><i>Hinweis: Diese Prüfung nutzt bankenübliche Pauschalen (z.B. für Bewirtschaftung) und zieht Ihre individuellen Nebenkosten (die Sie oben im Block 'Laufende Nebenkosten' detailliert erfasst haben) <b>nicht</b> direkt heran.</i></div>", unsafe_allow_html=True)
 
 with tab_erklaerung:
     st.header("📖 Funktionsweise & Berechnungen")
