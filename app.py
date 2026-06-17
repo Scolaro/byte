@@ -190,7 +190,7 @@ with tab_vermietung:
 
             r1c1, r1c2, r1c3 = st.columns(3)
             with r1c1:
-                purchase_price = st.number_input("Kaufpreis (€)", value=600000, step=None)
+                purchase_price = st.number_input("Kaufpreis (€)", value=650000, step=None)
             with r1c2:
                 closing_costs_percent = st.number_input("Kaufnebenkosten (%)", value=8.0, step=None, help="In Hessen beträgt die Grunderwerbsteuer 6%. Notar und Grundbuchamt machen ca. 2% aus.")
             with r1c3:
@@ -542,7 +542,7 @@ with tab_verkauf:
 
             r1c1, r1c2, r1c3 = st.columns(3)
             with r1c1:
-                vk_purchase_price = st.number_input("Kaufpreis (€)", value=600000, step=None, key="vk_purchase")
+                vk_purchase_price = st.number_input("Kaufpreis (€)", value=650000, step=None, key="vk_purchase")
             with r1c2:
                 vk_closing_costs_percent = st.number_input("Kaufnebenkosten (%)", value=8.0, step=None, help="In Hessen beträgt die Grunderwerbsteuer 6%. Notar und Grundbuchamt machen ca. 2% aus.", key="vk_closing")
             with r1c3:
