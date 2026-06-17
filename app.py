@@ -168,7 +168,7 @@ with tab_vermietung:
 
             r4c1, r4c2, r4c3 = st.columns(3)
             with r4c1:
-                monthly_rent = st.number_input("Monatliche Mieteinnahmen", value=1400, step=None)
+                monthly_rent = st.number_input("Monatliche Mieteinnahmen", value=1500, step=None)
             with r4c2:
                 renovations_old = st.number_input("Reparaturen vor Vermietung", value=10000, step=None)
             with r4c3:
@@ -190,7 +190,7 @@ with tab_vermietung:
 
             r1c1, r1c2, r1c3 = st.columns(3)
             with r1c1:
-                purchase_price = st.number_input("Kaufpreis (€)", value=600000, step=None)
+                purchase_price = st.number_input("Kaufpreis (€)", value=650000, step=None)
             with r1c2:
                 closing_costs_percent = st.number_input("Kaufnebenkosten (%)", value=8.0, step=None, help="In Hessen beträgt die Grunderwerbsteuer 6%. Notar und Grundbuchamt machen ca. 2% aus.")
             with r1c3:
@@ -198,9 +198,9 @@ with tab_vermietung:
 
             r1a1, r1a2, r1a3 = st.columns(3)
             with r1a1:
-                down_payment = st.number_input("Eigenkapital (€)", value=160000, step=None, help="Bargeld, das Sie für den Kauf, die Nebenkosten und Renovierungen einsetzen.")
+                down_payment = st.number_input("Eigenkapital (€)", value=200000, step=None, help="Bargeld, das Sie für den Kauf, die Nebenkosten und Renovierungen einsetzen.")
             with r1a2:
-                wohnflaeche_new = st.number_input("Wohnfläche (m²)", value=250, step=None)
+                wohnflaeche_new = st.number_input("Wohnfläche (m²)", value=260, step=None)
             with r1a3:
                 pass
 
@@ -265,7 +265,7 @@ with tab_vermietung:
             with h4c2:
                 tilgungssatz = st.number_input("Anfängl. Tilgung (%)", value=2.0, step=None)
             with h4c3:
-                zinsbindung = st.number_input("Zinsbindung (Jahre)", value=15, step=None)
+                zinsbindung = st.number_input("Zinsbindung (Jahre)", value=10, step=None)
             with h4c4:
                 sondertilgung = st.number_input("Jährl. Sondertilgung (€)", value=0, step=None)
 
@@ -389,7 +389,7 @@ with tab_vermietung:
             st.write("Berechnung des Netto-Gehalts für Steuerklasse 1 in Hessen ohne Kirchensteuer.")
             r5c1, r5c2, r5c3 = st.columns(3)
             with r5c1:
-                brutto_jahr = st.number_input("Jährliches Bruttogehalt (€)", value=55380, step=None)
+                brutto_jahr = st.number_input("Jährliches Bruttogehalt (€)", value=53504, step=None)
             with r5c2:
                 kv_satz = st.number_input("Gesetzlicher Krankenkassenbeitrag (%)", value=16.8, step=None, format="%.1f")
             with r5c3:
@@ -416,7 +416,7 @@ with tab_vermietung:
             st.header("Laufende Kosten (Privat, mtl.)")
             pr1c1, pr1c2, pr1c3 = st.columns(3)
             with pr1c1:
-                priv_nahrung = st.number_input("Nahrungsmittel", value=200, step=None)
+                priv_nahrung = st.number_input("Nahrungsmittel", value=50, step=None)
             with pr1c2:
                 priv_mobilitaet = st.number_input("Mobilität (Auto, ÖPNV)", value=45.0, step=None)
             with pr1c3:
@@ -542,7 +542,7 @@ with tab_verkauf:
 
             r1c1, r1c2, r1c3 = st.columns(3)
             with r1c1:
-                vk_purchase_price = st.number_input("Kaufpreis (€)", value=600000, step=None, key="vk_purchase")
+                vk_purchase_price = st.number_input("Kaufpreis (€)", value=650000, step=None, key="vk_purchase")
             with r1c2:
                 vk_closing_costs_percent = st.number_input("Kaufnebenkosten (%)", value=8.0, step=None, help="In Hessen beträgt die Grunderwerbsteuer 6%. Notar und Grundbuchamt machen ca. 2% aus.", key="vk_closing")
             with r1c3:
@@ -552,9 +552,9 @@ with tab_verkauf:
             with r1a1:
                 vk_down_payment = st.number_input("Netto-Erlös Verkauf Altes Haus (€)", value=300000, step=None, help="Konservativ geschätzt", key="vk_netto_erloes")
             with r1a2:
-                vk_sonstiges_eigenkapital = st.number_input("Sonstiges Eigenkapital (€)", value=160000, step=None, help="Ersparnisse etc.", key="vk_sonstiges_ek")
+                vk_sonstiges_eigenkapital = st.number_input("Sonstiges Eigenkapital (€)", value=200000, step=None, help="Ersparnisse etc.", key="vk_sonstiges_ek")
             with r1a3:
-                vk_wohnflaeche_new = st.number_input("Wohnfläche (m²)", value=250, step=None, key="vk_wohn")
+                vk_wohnflaeche_new = st.number_input("Wohnfläche (m²)", value=260, step=None, key="vk_wohn")
 
             vk_closing_costs_eur = vk_purchase_price * (vk_closing_costs_percent / 100)
             vk_total_capital_needed = vk_purchase_price + vk_closing_costs_eur + vk_renovations_new
@@ -579,7 +579,7 @@ with tab_verkauf:
             with h4c2:
                 vk_tilgungssatz = st.number_input("Anfängl. Tilgung (%)", value=2.0, step=None, key="vk_tilg")
             with h4c3:
-                vk_zinsbindung = st.number_input("Zinsbindung (Jahre)", value=15, step=None, key="vk_bind")
+                vk_zinsbindung = st.number_input("Zinsbindung (Jahre)", value=10, step=None, key="vk_bind")
             with h4c4:
                 vk_sondertilgung = st.number_input("Jährl. Sondertilgung (€)", value=0, step=None, key="vk_sond")
 
@@ -679,7 +679,7 @@ with tab_verkauf:
             st.write("Berechnung des Netto-Gehalts für Steuerklasse 1 in Hessen ohne Kirchensteuer.")
             r5c1, r5c2, r5c3 = st.columns(3)
             with r5c1:
-                vk_brutto_jahr = st.number_input("Jährliches Bruttogehalt (€)", value=55380, step=None, key="vk_brutto")
+                vk_brutto_jahr = st.number_input("Jährliches Bruttogehalt (€)", value=53504, step=None, key="vk_brutto")
             with r5c2:
                 vk_kv_satz = st.number_input("Gesetzlicher Krankenkassenbeitrag (%)", value=16.8, step=None, format="%.1f", key="vk_kv")
             with r5c3:
@@ -695,7 +695,7 @@ with tab_verkauf:
             st.header("Laufende Kosten (Privat, mtl.)")
             pr1c1, pr1c2, pr1c3 = st.columns(3)
             with pr1c1:
-                vk_priv_nahrung = st.number_input("Nahrungsmittel", value=200, step=None, key="vk_priv_nahr")
+                vk_priv_nahrung = st.number_input("Nahrungsmittel", value=50, step=None, key="vk_priv_nahr")
             with pr1c2:
                 vk_priv_mobilitaet = st.number_input("Mobilität (Auto, ÖPNV)", value=45.0, step=None, key="vk_priv_mob")
             with pr1c3:
